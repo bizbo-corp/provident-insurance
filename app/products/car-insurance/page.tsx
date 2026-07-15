@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Placeholder } from "@/components/placeholder";
 import {
+  type LucideIcon,
   BadgeDollarSign,
   CalendarCheck,
   CarFront,
@@ -68,7 +69,14 @@ const featureCards = [
   },
 ];
 
-const benefitGroups = [
+type Benefit = { title: string; desc: string; included?: boolean };
+type BenefitGroup = {
+  heading: string;
+  icon: LucideIcon;
+  items: Benefit[];
+};
+
+const benefitGroups: BenefitGroup[] = [
   {
     heading: "Damage & loss",
     icon: CarFront,
@@ -392,37 +400,44 @@ export default function CarInsurancePage() {
             <Accordion type="multiple">
               {benefitGroups.map((group, groupIndex) => (
                 <div key={group.heading} className={sectionSteps[groupIndex]}>
-                  <div className="flex items-center gap-2 py-3 pl-6 pr-6 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    <group.icon
-                      className="size-6 shrink-0 text-primary"
-                      aria-hidden="true"
-                    />
-                    {group.heading}
+                  <div className="flex items-stretch text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    <div className="flex flex-1 items-center gap-2 border-b border-[#f4f2ec] py-3 pl-6">
+                      <group.icon
+                        className="size-6 shrink-0 text-primary"
+                        aria-hidden="true"
+                      />
+                      {group.heading}
+                    </div>
+                    {group.items.every((item) => item.included !== false) && (
+                      <div className="w-20 shrink-0 border-b border-green-200 bg-green-100" />
+                    )}
                   </div>
                   {group.items.map((item) => (
                     <AccordionItem
                       key={item.title}
                       value={item.title}
-                      className="border-[#f4f2ec] pl-14 pr-6 last:border-b-0"
+                      className="group/row flex border-[#f4f2ec] last:border-b-0"
                     >
-                      <AccordionTrigger className="items-center py-5 hover:no-underline **:data-[slot=accordion-trigger-icon]:hidden">
-                        <span className="flex flex-1 items-center gap-2 text-base font-bold hover:underline">
-                          {item.title}
-                          <CircleHelp
-                            className="size-5 shrink-0 text-muted-foreground"
-                            aria-hidden="true"
-                          />
-                        </span>
-                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-green-100">
-                          <CircleCheck
-                            className="size-6 text-green-600"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </AccordionTrigger>
-                      <AccordionContent className="max-w-2xl text-base text-muted-foreground">
-                        {item.desc}
-                      </AccordionContent>
+                      <div className="min-w-0 flex-1 pl-14">
+                        <AccordionTrigger className="py-0 hover:no-underline **:data-[slot=accordion-trigger-icon]:hidden">
+                          <span className="flex-1 py-5 text-base font-bold hover:underline">
+                            {item.title}
+                            <CircleHelp
+                              className="ml-2 inline-block size-5 align-[-4px] text-muted-foreground"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </AccordionTrigger>
+                        <AccordionContent className="max-w-2xl pr-6 text-base text-muted-foreground">
+                          {item.desc}
+                        </AccordionContent>
+                      </div>
+                      <div className="-mb-px flex w-20 shrink-0 items-start justify-center border-b border-green-200 bg-green-100 pt-5 group-last/row:mb-0">
+                        <CircleCheck
+                          className="size-6 text-green-600"
+                          aria-hidden="true"
+                        />
+                      </div>
                     </AccordionItem>
                   ))}
                 </div>
