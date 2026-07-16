@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Placeholder } from "@/components/placeholder";
+import { StickyQuoteBar } from "@/components/sticky-quote-bar";
 import {
   type LucideIcon,
   BadgeDollarSign,
@@ -353,7 +354,7 @@ export default function CarInsurancePage() {
               size="lg"
               className="mt-8 rounded-full bg-white px-8 text-primary hover:bg-white/90"
             >
-              <Link href="#">Get a car insurance quote</Link>
+              <Link href="/quote">Get a car insurance quote</Link>
             </Button>
           </div>
         </div>
@@ -700,6 +701,8 @@ export default function CarInsurancePage() {
           ))}
         </div>
       </section>
+
+      <StickyQuoteBar />
     </>
   );
 }

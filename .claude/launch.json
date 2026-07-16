@@ -4,9 +4,9 @@
     {
       "name": "provident-insurance",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000,
-      "autoPort": true
+      "runtimeArgs": ["run", "dev", "--", "-p", "56717"],
+      "port": 56717,
+      "autoPort": false
     }
   ]
 }
