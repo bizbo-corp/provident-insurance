@@ -1,249 +1,255 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { QuoteCta } from "@/components/quote/quote-cta";
-import { useReportSectionProgress } from "@/components/quote/quote-progress";
+import { useState } from "react";
 import {
   ChoiceGroup,
   HelpLink,
   Question,
+  QUOTE_FIELD,
+  QuestionNote,
+  QuoteButton,
+  QuoteField,
+  QuoteStepActions,
 } from "@/components/quote/quote-question";
-import { nextQuoteStep, quoteStepHref } from "@/lib/quote-flow";
+import { nextQuoteStep, quoteStep, quoteStepHref } from "@/lib/quote-flow";
 
-type Usage = "personal" | "business" | "both" | null;
 type YesNo = "yes" | "no" | null;
 
+const YES_NO: { value: "yes" | "no"; label: string }[] = [
+  { value: "no", label: "No" },
+  { value: "yes", label: "Yes" },
+];
+
+const USAGE = [
+  { value: "personal", label: "Personal" },
+  { value: "business", label: "Business" },
+  { value: "both", label: "Both" },
+] as const;
+
+const ANTI_THEFT = [
+  { value: "none", label: "None" },
+  { value: "alarm", label: "Alarm and/or Immobilizer" },
+] as const;
+
+const PARKING = [
+  { value: "garage", label: "Garage (fully enclosed)" },
+  { value: "off-street", label: "Off Street Parking" },
+  { value: "other", label: "Other" },
+] as const;
+
+const EMPTY_ADDRESS = { building: "", flat: "", street: "", suburb: "", town: "", postcode: "" };
+
+/** Stands in for the live registration lookup, which we can't call locally. */
 const SAMPLE_VEHICLE = {
   year: "2019 Toyota",
   model: "Highlander GSU55R GXL Wagon 7st 5dr Spts Auto 8sp 4x4 3.5i",
 };
 
-/** NZ plates are 1-6 alphanumeric characters; require 2+ before searching. */
-const REGO_PATTERN = /^[A-Z0-9]{2,6}$/;
+const REGO_PATTERN = /^[A-Z0-9]{1,6}$/;
+
+function PlateDots() {
+  return (
+    <>
+      <span className="absolute top-2 left-2 size-2 rounded-full bg-black/25" />
+      <span className="absolute top-2 right-2 size-2 rounded-full bg-black/25" />
+      <span className="absolute bottom-2 left-2 size-2 rounded-full bg-black/25" />
+      <span className="absolute right-2 bottom-2 size-2 rounded-full bg-black/25" />
+    </>
+  );
+}
 
 export default function QuoteCarPage() {
   const router = useRouter();
 
   const [rego, setRego] = useState("");
   const [vehicle, setVehicle] = useState<typeof SAMPLE_VEHICLE | null>(null);
-  const [usage, setUsage] = useState<Usage>(null);
-  const [oweMoney, setOweMoney] = useState<YesNo>(null);
-  const [modifications, setModifications] = useState<YesNo>(null);
+  const [manual, setManual] = useState(false);
+  const [year, setYear] = useState("");
+  const [make, setMake] = useState("");
+  const [usage, setUsage] = useState<(typeof USAGE)[number]["value"] | null>(null);
+  const [owesMoney, setOwesMoney] = useState<YesNo>(null);
+  const [modified, setModified] = useState<YesNo>(null);
+  const [antiTheft, setAntiTheft] = useState<(typeof ANTI_THEFT)[number]["value"] | null>(null);
+  const [extraCover, setExtraCover] = useState<YesNo>(null);
+  const [addressSearch, setAddressSearch] = useState("");
+  const [address, setAddress] = useState(EMPTY_ADDRESS);
+  const [parking, setParking] = useState<(typeof PARKING)[number]["value"] | null>(null);
 
-  const regoIsValid = REGO_PATTERN.test(rego);
+  const carKnown = vehicle !== null || (manual && year !== "" && make !== "");
 
-  const questions = [vehicle, usage, oweMoney, modifications];
-  const firstUnanswered = questions.findIndex((v) => v === null);
+  const answers = [
+    carKnown,
+    usage !== null,
+    owesMoney !== null,
+    modified !== null,
+    antiTheft !== null,
+    extraCover !== null,
+    addressSearch.trim() !== "" ||
+      (address.building !== "" && address.street !== "" && address.town !== "" && address.postcode !== ""),
+    parking !== null,
+  ];
+
+  // One question at a time: everything up to and including the first unanswered.
+  const firstUnanswered = answers.indexOf(false);
   const allDone = firstUnanswered === -1;
-
-  // Reveal one question at a time: everything up to and including the first
-  // unanswered one. Answers are kept in state, so a question that hides again
-  // (e.g. after "Search again") comes back with its answer intact.
-  const lastVisible = allDone ? questions.length - 1 : firstUnanswered;
+  const lastVisible = allDone ? answers.length - 1 : firstUnanswered;
   const isVisible = (index: number) => index <= lastVisible;
+  const isLast = (index: number) => index === lastVisible;
 
-  // The rego lookup carries half this step's weight: arriving shows a 25%
-  // baseline, finding the car takes it to 50%, and the three follow-up
-  // questions share the remaining half.
-  const followUps = [usage, oweMoney, modifications];
-  const followUpsAnswered = followUps.filter((v) => v !== null).length;
-  useReportSectionProgress(
-    vehicle === null
-      ? 0.25
-      : 0.5 + 0.5 * (followUpsAnswered / followUps.length)
+  const addressField = (label: string, key: keyof typeof EMPTY_ADDRESS) => (
+    <QuoteField
+      label={label}
+      value={address[key]}
+      onChange={(event) => setAddress({ ...address, [key]: event.target.value })}
+    />
   );
-
-  const following = nextQuoteStep("car");
-
-  function handleRegoChange(value: string) {
-    setRego(value.toUpperCase());
-    // A different plate invalidates the previously matched vehicle.
-    setVehicle(null);
-  }
 
   return (
     <>
-      <h1 className="mt-8 text-3xl font-bold text-foreground sm:text-4xl">
+      <h2 className="mt-[26px] mb-8 text-2xl leading-[1.2] font-bold">
         Let&rsquo;s get you a car insurance quote
-      </h1>
+      </h2>
 
-      {/* Divider + generous gap so the eye lands on the input area next. */}
-      <hr className="mt-8 border-border" />
+      <Question done={answers[0]} title="Enter your car registration number" isLast={isLast(0)}>
+        <HelpLink />
+        <p>If you don&apos;t know your registration number, just leave it blank for now.</p>
 
-      <div className="mt-10">
-        <Question
-          done={vehicle !== null}
-          title="Enter your car registration number"
-          isLast={lastVisible === 0}
-        >
-          <HelpLink />
-          <p className="text-lg">
-            If you don&rsquo;t know your registration number, you can enter your
-            car&rsquo;s details instead.
-          </p>
+        <div className="relative h-14 w-[310px] max-w-full rounded-lg border border-black/30">
+          <PlateDots />
+          <input
+            aria-label="Registration number"
+            value={rego}
+            maxLength={6}
+            autoComplete="off"
+            placeholder="M Y R E G O"
+            onChange={(event) => {
+              setRego(event.target.value.toUpperCase());
+              setVehicle(null);
+            }}
+            className="size-full bg-transparent text-center text-4xl uppercase outline-none placeholder:text-black/25"
+          />
+        </div>
 
-          <div className="max-w-md space-y-4">
-            <Label htmlFor="rego" className="sr-only">
-              Car registration number
-            </Label>
-            <div className="relative rounded-md border-2 border-foreground/30 bg-white px-8">
-              <span className="absolute left-3 top-3 size-1.5 rounded-full bg-gray-300" />
-              <span className="absolute right-3 top-3 size-1.5 rounded-full bg-gray-300" />
-              <span className="absolute bottom-3 left-3 size-1.5 rounded-full bg-gray-300" />
-              <span className="absolute bottom-3 right-3 size-1.5 rounded-full bg-gray-300" />
-              <Input
-                id="rego"
-                value={rego}
-                onChange={(e) => handleRegoChange(e.target.value)}
-                placeholder="ABC123"
-                maxLength={6}
-                autoComplete="off"
-                className="h-24 border-0 bg-transparent text-center font-sans !text-5xl font-medium tracking-wider shadow-none placeholder:text-foreground/25 focus-visible:ring-0"
-              />
-            </div>
-            {/* The lookup is a supporting action, so it's black rather than
-                red — red stays reserved for Next. Once a car is found this
-                drops again to the quieter outline variant. */}
-            {vehicle ? (
-              <QuoteCta
-                variant="outline"
-                onClick={() => setVehicle(null)}
-                className="w-full"
-              >
-                Search again
-              </QuoteCta>
-            ) : (
-              <QuoteCta
-                variant="secondary"
-                inactive={!regoIsValid}
-                hint="Enter a registration number to continue"
-                onClick={() => setVehicle(SAMPLE_VEHICLE)}
-                className="w-full"
-              >
-                Find my Car
-              </QuoteCta>
-            )}
-          </div>
-
-          {vehicle && (
-            <div className="space-y-3 rounded-lg bg-muted p-6" aria-live="polite">
-              <p className="text-xl font-bold">{vehicle.year}</p>
-              <p className="text-lg">
-                <strong>Model:</strong> {vehicle.model}
-              </p>
-            </div>
-          )}
-
-          <p className="text-lg">
-            Or{" "}
-            <button
-              type="button"
-              className="underline underline-offset-2 hover:text-primary"
+        <div>
+          {vehicle ? (
+            <QuoteButton variant="outline" onClick={() => setVehicle(null)}>
+              Search again
+            </QuoteButton>
+          ) : (
+            <QuoteButton
+              variant="outline"
+              disabled={!REGO_PATTERN.test(rego)}
+              onClick={() => setVehicle(SAMPLE_VEHICLE)}
             >
-              enter your car&rsquo;s details
+              Find my Car
+            </QuoteButton>
+          )}
+        </div>
+
+        {vehicle && (
+          <div className="space-y-4" aria-live="polite">
+            <p className="text-lg font-bold">{vehicle.year}</p>
+            <p><strong>Model:</strong> {vehicle.model}</p>
+          </div>
+        )}
+
+        {manual ? (
+          <div className="space-y-4">
+            <p>Or enter your car&apos;s details:</p>
+            <QuoteField label="Year" value={year} onChange={(e) => setYear(e.target.value)} />
+            <QuoteField label="Make" value={make} onChange={(e) => setMake(e.target.value)} />
+          </div>
+        ) : (
+          <p>
+            Or{" "}
+            <button type="button" className="text-quote-muted underline" onClick={() => setManual(true)}>
+              enter your car&apos;s details
             </button>
           </p>
+        )}
+      </Question>
+
+      {isVisible(1) && (
+        <Question done={answers[1]} title="How will you use this car?" isLast={isLast(1)}>
+          <HelpLink />
+          <QuestionNote>
+            Note: Provident does not currently cover Uber, ride sharing, delivery service or driving schools on our car insurance.
+          </QuestionNote>
+          <ChoiceGroup options={[...USAGE]} value={usage} onChange={setUsage} />
         </Question>
+      )}
 
-        {isVisible(1) && (
-          <Question
-            done={usage !== null}
-            title="How will you use this car?"
-            isLast={lastVisible === 1}
-          >
-            <ChoiceGroup
-              options={[
-                { value: "personal", label: "Personal" },
-                { value: "business", label: "Business" },
-                { value: "both", label: "Both Personal and Business" },
-              ]}
-              value={usage}
-              onChange={setUsage}
+      {isVisible(2) && (
+        <Question done={answers[2]} title="Do you owe money on the car you are insuring?" isLast={isLast(2)}>
+          <HelpLink />
+          <ChoiceGroup options={YES_NO} value={owesMoney} onChange={setOwesMoney} />
+        </Question>
+      )}
+
+      {isVisible(3) && (
+        <Question
+          done={answers[3]}
+          title="Does the vehicle have any of these non-standard modifications or features, Nitrous oxide system (NOS), Roll cage, Full Racing harness?"
+          isLast={isLast(3)}
+        >
+          <ChoiceGroup options={YES_NO} value={modified} onChange={setModified} />
+        </Question>
+      )}
+
+      {isVisible(4) && (
+        <Question done={answers[4]} title="Does your car have an anti-theft device?" isLast={isLast(4)}>
+          <HelpLink />
+          <ChoiceGroup options={[...ANTI_THEFT]} value={antiTheft} onChange={setAntiTheft} />
+        </Question>
+      )}
+
+      {isVisible(5) && (
+        <Question
+          done={answers[5]}
+          title="Does the vehicle have any modifications and or accessories that require additional cover greater than $2000?"
+          isLast={isLast(5)}
+        >
+          <HelpLink />
+          <ChoiceGroup options={YES_NO} value={extraCover} onChange={setExtraCover} />
+        </Question>
+      )}
+
+      {isVisible(6) && (
+        <Question done={answers[6]} title="Address where you usually keep your car overnight" isLast={isLast(6)}>
+          <HelpLink />
+          <label className="block text-sm font-bold">
+            Search for address
+            <input
+              value={addressSearch}
+              onChange={(event) => setAddressSearch(event.target.value)}
+              className={`mt-1 text-base ${QUOTE_FIELD}`}
             />
+          </label>
+          <p>Or enter the address manually:</p>
+          <div className="grid grid-cols-2 gap-4">
+            {addressField("Building number", "building")}
+            {addressField("Flat number (optional)", "flat")}
+          </div>
+          {addressField("Street name", "street")}
+          {addressField("Suburb", "suburb")}
+          {addressField("Town / City", "town")}
+          {addressField("Postcode", "postcode")}
+        </Question>
+      )}
 
-            <div className="space-y-4 rounded-lg bg-red-50 p-6 text-[#7a3b35]">
-              <p>
-                <strong>Personal &amp; Business</strong>: Any use, however the
-                following business uses are not covered:
-              </p>
-              <ul className="list-disc space-y-1 pl-6">
-                <li>Taxi, Uber, or similar fare-paying passenger services</li>
-                <li>
-                  Courier or delivery services (e.g., Uber Eats or similar food
-                  delivery service)
-                </li>
-                <li>Driver education and training</li>
-              </ul>
-              <p>
-                <strong>Business</strong>: If the vehicle is ONLY used for
-                business purposes and no private / personal use. e.g. a work pool
-                car that is used only during work hours and parked when not in
-                use on work premises.
-              </p>
-              <p>
-                <strong>Personal</strong>: Never used in connection with a
-                business, profession, or occupation other than driving to and
-                from a place of work (commuting) or to partake in volunteer work.
-              </p>
-            </div>
-          </Question>
-        )}
+      {isVisible(7) && (
+        <Question done={answers[7]} title="Where is your car parked most of the time?" isLast>
+          <HelpLink />
+          <ChoiceGroup options={[...PARKING]} value={parking} onChange={setParking} />
+        </Question>
+      )}
 
-        {isVisible(2) && (
-          <Question
-            done={oweMoney !== null}
-            title="Do you owe money on the car you are insuring?"
-            isLast={lastVisible === 2}
-          >
-            <HelpLink />
-            <ChoiceGroup
-              options={[
-                { value: "no", label: "No" },
-                { value: "yes", label: "Yes" },
-              ]}
-              value={oweMoney}
-              onChange={setOweMoney}
-            />
-          </Question>
-        )}
-
-        {isVisible(3) && (
-          <Question
-            done={modifications !== null}
-            title="Does the vehicle have any of these non-standard modifications or features, Nitrous oxide system (NOS), Roll cage, Full Racing harness?"
-            isLast
-          >
-            <ChoiceGroup
-              options={[
-                { value: "no", label: "No" },
-                { value: "yes", label: "Yes" },
-              ]}
-              value={modifications}
-              onChange={setModifications}
-            />
-          </Question>
-        )}
-      </div>
-
-      <hr className="border-border" />
-
-      {/* Revealed once every question is answered, so it's never a dead grey
-          button competing with "Find my Car". This is step one, so there's no
-          Back to sit alongside it. */}
       {allDone && (
-        <div className="mt-8 animate-in pl-13 fade-in-0 duration-300">
-          <QuoteCta
-            className="w-full"
-            onClick={() => {
-              if (following) router.push(quoteStepHref(following.slug));
-            }}
-          >
-            Next
-          </QuoteCta>
-        </div>
+        <QuoteStepActions
+          nextLabel={quoteStep("car").nextLabel}
+          onNext={() => router.push(quoteStepHref(nextQuoteStep("car").slug))}
+        />
       )}
     </>
   );

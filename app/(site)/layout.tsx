@@ -1,16 +1,14 @@
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
+import { StickyCtaBar } from "@/components/layout/sticky-cta-bar";
 
-export default function SiteLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="pt-(--nav-height,97px)">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main>{children}</main>
       <SiteFooter />
-    </>
+      <StickyCtaBar />
+    </div>
   );
 }

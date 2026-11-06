@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type SelectOption = { value: string; label: string };
@@ -17,18 +16,20 @@ export function QuoteSelect({
   placeholder,
   options,
   className,
+  hideLabel = false,
 }: {
   id: string;
   label: string;
   value: string | null;
   onChange: (value: string | null) => void;
-  placeholder: string;
+  placeholder?: string;
   options: SelectOption[];
   className?: string;
+  hideLabel?: boolean;
 }) {
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-bold">
+      <label htmlFor={id} className={hideLabel ? "sr-only" : "mb-1 block text-sm font-bold"}>
         {label}
       </label>
       <div className="relative">
@@ -37,24 +38,27 @@ export function QuoteSelect({
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value || null)}
           className={cn(
-            "h-12 w-full appearance-none rounded-lg border border-border bg-white px-4 pr-10 text-base",
-            "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-            value === null && "text-muted-foreground"
+            "h-14 w-full appearance-none rounded-lg border border-black/25 bg-white px-4 pr-10 text-base",
+            "outline-none focus-visible:border-quote-ink",
+            
           )}
         >
           <option value="" disabled>
-            {placeholder}
+            {placeholder ?? ""}
           </option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value} className="text-foreground">
+            <option key={opt.value} value={opt.value} className="text-quote-ink">
               {opt.label}
             </option>
           ))}
         </select>
-        <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        <svg
+          viewBox="0 0 24 24"
           aria-hidden="true"
-        />
+          className="pointer-events-none absolute top-1/2 right-3 size-6 -translate-y-1/2 fill-quote-muted"
+        >
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
       </div>
     </div>
   );

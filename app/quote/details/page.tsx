@@ -2,20 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { QuoteCta } from "@/components/quote/quote-cta";
-import { useReportSectionProgress } from "@/components/quote/quote-progress";
 import {
   ChoiceGroup,
   HelpLink,
   Question,
   QuestionNote,
+  QuoteStepActions,
 } from "@/components/quote/quote-question";
 import { QuoteSelect, type SelectOption } from "@/components/quote/quote-select";
 import {
   nextQuoteStep,
   previousQuoteStep,
+  quoteStep,
   quoteStepHref,
 } from "@/lib/quote-flow";
 
@@ -70,6 +68,12 @@ const POLICY_YEARS: SelectOption[] = [CURRENT_YEAR, CURRENT_YEAR + 1].map(
   (year) => ({ value: String(year), label: String(year) })
 );
 
+/** Assumed range: the live list isn't visible in the captured screenshot. */
+const YOUNGEST_DRIVER_AGES: SelectOption[] = Array.from({ length: 9 }, (_, i) => ({
+  value: String(16 + i),
+  label: String(16 + i),
+}));
+
 const isDateComplete = (d: DateParts) =>
   d.day !== null && d.month !== null && d.year !== null;
 
@@ -85,11 +89,10 @@ function DateFields({
   years: SelectOption[];
 }) {
   return (
-    <div className="grid max-w-2xl gap-4 sm:grid-cols-[1fr_2fr_1.5fr]">
+    <div className="grid grid-cols-[1fr_2fr_1fr] gap-4">
       <QuoteSelect
         id={`${idPrefix}-day`}
         label="Day"
-        placeholder="Day"
         options={DAYS}
         value={value.day}
         onChange={(day) => onChange({ ...value, day })}
@@ -97,7 +100,6 @@ function DateFields({
       <QuoteSelect
         id={`${idPrefix}-month`}
         label="Month"
-        placeholder="Month"
         options={MONTHS}
         value={value.month}
         onChange={(month) => onChange({ ...value, month })}
@@ -105,7 +107,6 @@ function DateFields({
       <QuoteSelect
         id={`${idPrefix}-year`}
         label="Year"
-        placeholder="Year"
         options={years}
         value={value.year}
         onChange={(year) => onChange({ ...value, year })}
@@ -121,6 +122,7 @@ export default function QuoteDriverPage() {
   const [birthDate, setBirthDate] = useState<DateParts>(EMPTY_DATE);
   const [licence, setLicence] = useState<string | null>(null);
   const [excludeUnder25, setExcludeUnder25] = useState<YesNo>(null);
+  const [youngestAge, setYoungestAge] = useState<string | null>(null);
   const [atFaultLoss, setAtFaultLoss] = useState<YesNo>(null);
   const [policyStart, setPolicyStart] = useState<DateParts>(EMPTY_DATE);
 
@@ -128,7 +130,7 @@ export default function QuoteDriverPage() {
     gender !== null,
     isDateComplete(birthDate),
     licence !== null,
-    excludeUnder25 !== null,
+    excludeUnder25 === "yes" || (excludeUnder25 === "no" && youngestAge !== null),
     atFaultLoss !== null,
     isDateComplete(policyStart),
   ];
@@ -141,22 +143,12 @@ export default function QuoteDriverPage() {
   const lastVisible = allDone ? answers.length - 1 : firstUnanswered;
   const isVisible = (index: number) => index <= lastVisible;
 
-  useReportSectionProgress(
-    answers.filter(Boolean).length / answers.length
-  );
-
   const following = nextQuoteStep("details");
   const preceding = previousQuoteStep("details");
 
   return (
     <>
-      <h1 className="mt-8 text-3xl font-bold text-foreground sm:text-4xl">
-        Tell us about the driver
-      </h1>
-
-      <hr className="mt-8 border-border" />
-
-      <div className="mt-10">
+      <div className="mt-[26px]">
         <Question
           done={answers[0]}
           title="What is the main driver's gender?"
@@ -200,11 +192,11 @@ export default function QuoteDriverPage() {
             <QuoteSelect
               id="licence"
               label="Licence type"
-              placeholder="Select a licence"
+              hideLabel
               options={LICENCE_OPTIONS}
               value={licence}
               onChange={setLicence}
-              className="max-w-2xl"
+              
             />
           </Question>
         )}
@@ -224,6 +216,19 @@ export default function QuoteDriverPage() {
               value={excludeUnder25}
               onChange={setExcludeUnder25}
             />
+            {excludeUnder25 === "no" && (
+              <div className="pt-6">
+                <p className="mb-3 font-bold">What is the age of the youngest person who will drive this vehicle?</p>
+                <QuoteSelect
+                  id="youngest-age"
+                  label="Age of the youngest driver"
+                  hideLabel
+                  options={YOUNGEST_DRIVER_AGES}
+                  value={youngestAge}
+                  onChange={setYoungestAge}
+                />
+              </div>
+            )}
           </Question>
         )}
 
@@ -262,32 +267,12 @@ export default function QuoteDriverPage() {
         )}
       </div>
 
-      <hr className="border-border" />
-
-      <div className="mt-8 flex items-center gap-4 pl-13">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => {
-            if (preceding) router.push(quoteStepHref(preceding.slug));
-          }}
-          className="h-14 shrink-0 rounded-lg px-5 text-base font-bold"
-        >
-          <ChevronLeft className="size-5" aria-hidden="true" />
-          Back
-        </Button>
-        {allDone && (
-          <QuoteCta
-            containerClassName="flex-1 animate-in fade-in-0 duration-300"
-            className="w-full"
-            onClick={() => {
-              if (following) router.push(quoteStepHref(following.slug));
-            }}
-          >
-            Next
-          </QuoteCta>
-        )}
-      </div>
+      <QuoteStepActions
+        nextLabel={allDone ? quoteStep("details").nextLabel : undefined}
+        onNext={() => router.push(quoteStepHref(following.slug))}
+        onBack={() => router.push(quoteStepHref(preceding.slug))}
+      />
+      <p className="mt-1 text-right text-[11px] text-quote-muted">This site is protected by reCAPTCHA</p>
     </>
   );
 }
