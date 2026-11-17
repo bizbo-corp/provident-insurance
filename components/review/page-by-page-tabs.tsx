@@ -1,76 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ShotCompare } from "@/components/review/shot-compare";
 import type { InitiativePage } from "@/content/review";
 
 /**
- * One tab per page an initiative touches. A link to `#<initiative>-<page>`
- * (as in the side navigation) opens that tab and scrolls to it.
+ * Every example an initiative has, in one list with a single screen-size switch.
+ * Each page gets one pair of links to open it, beside the switch. Where two pages
+ * share a caption, the page name goes in front so they can be told apart.
  */
 export function PageTabs({ initiativeId, pages }: { initiativeId: string; pages: InitiativePage[] }) {
-  const [active, setActive] = useState(pages[0].id);
-  const anchor = (pageId: string) => `${initiativeId}-${pageId}`;
-
-  useEffect(() => {
-    const fromHash = () => {
-      const match = pages.find((page) => `#${anchor(page.id)}` === window.location.hash);
-      if (!match) return;
-      setActive(match.id);
-      document.getElementById(`${initiativeId}-pages`)?.scrollIntoView();
-    };
-    fromHash();
-    window.addEventListener("hashchange", fromHash);
-    return () => window.removeEventListener("hashchange", fromHash);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initiativeId, pages]);
-
-  const page = pages.find((candidate) => candidate.id === active) ?? pages[0];
-
+  const captions = pages.flatMap((page) => page.shots.map((shot) => shot.caption));
+  const duplicated = new Set(captions.filter((caption, index) => captions.indexOf(caption) !== index));
   return (
     <div id={`${initiativeId}-pages`} className="scroll-mt-6">
-      <div role="tablist" aria-label="Pages" className="bz-tabs flex flex-wrap gap-1">
-        {pages.map((candidate) => {
-          const selected = candidate.id === page.id;
-          return (
-            <button
-              key={candidate.id}
-              id={`${anchor(candidate.id)}-tab`}
-              type="button"
-              role="tab"
-              aria-selected={selected}
-              aria-controls={`${anchor(candidate.id)}-panel`}
-              onClick={() => {
-                setActive(candidate.id);
-                history.replaceState(null, "", `#${anchor(candidate.id)}`);
-              }}
-              className="bz-tab"
-            >
-              {candidate.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        id={`${anchor(page.id)}-panel`}
-        role="tabpanel"
-        aria-labelledby={`${anchor(page.id)}-tab`}
-        className="space-y-6 pt-6"
-      >
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <p className="bz-lede max-w-xl">{page.summary}</p>
-          <div className="flex flex-wrap gap-2">
-            <a href={`${page.path}?v=before`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--ghost bz-btn--sm">
-              Open before <span className="bz-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a href={`${page.path}?v=after`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--primary bz-btn--sm">
-              Open after <span className="bz-arrow" aria-hidden="true">↗</span>
-            </a>
+      <ShotCompare
+        spacious
+        shots={pages.flatMap((page) =>
+          page.shots.map((shot) => (duplicated.has(shot.caption) ? { ...shot, caption: `${page.label}: ${shot.caption}` } : shot))
+        )}
+        toolbar={
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {pages.map((page) => (
+              <div key={page.id} className="flex flex-wrap items-center gap-2">
+                {pages.length > 1 && <span className="bz-muted text-sm">{page.label}</span>}
+                <a href={`${page.path}?v=before`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--ghost bz-btn--sm">
+                  Before<span className="sr-only"> ({page.label}, opens the live version)</span>{" "}
+                  <span className="bz-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+                <a href={`${page.path}?v=after`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--primary bz-btn--sm">
+                  After<span className="sr-only"> ({page.label}, opens version 2)</span>{" "}
+                  <span className="bz-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
+            ))}
           </div>
-        </div>
-        <ShotCompare key={page.id} shots={page.shots} />
-      </div>
+        }
+      />
     </div>
   );
 }

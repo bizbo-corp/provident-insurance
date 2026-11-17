@@ -2,21 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { initiatives } from "@/content/review";
 
-/** Overview and one link per initiative (testimonials sit under Social proof), with feedback pinned at the foot. Page links show for the open initiative only. */
+/** Overview and one link per initiative (testimonials sit under Social proof), with feedback pinned at the foot. */
 export function ReviewNav() {
   const pathname = usePathname();
-  const [hash, setHash] = useState("");
-
-  useEffect(() => {
-    const update = () => setHash(window.location.hash);
-    update();
-    window.addEventListener("hashchange", update);
-    return () => window.removeEventListener("hashchange", update);
-  }, [pathname]);
-
   const current = (href: string) => (pathname === href ? "page" : undefined);
 
   return (
@@ -40,38 +30,11 @@ export function ReviewNav() {
               </Link>
               {initiative.id === "social-proof" && (active || pathname === "/review/testimonials") && (
                 <ul className="bz-subnav mt-1 mb-2 ml-12 space-y-0.5 pl-3">
-                  {initiative.pages.map((page, index) => {
-                    const pageHash = `#${initiative.id}-${page.id}`;
-                    // On the testimonial review page these link back into Social proof, and none is current.
-                    const isCurrent = active && (hash ? hash === pageHash : index === 0);
-                    return (
-                      <li key={page.id}>
-                        <a href={active ? pageHash : `${href}${pageHash}`} aria-current={isCurrent ? "true" : undefined}>
-                          {page.label}
-                        </a>
-                      </li>
-                    );
-                  })}
                   <li>
                     <Link href="/review/testimonials" aria-current={current("/review/testimonials")}>
                       Testimonial review
                     </Link>
                   </li>
-                </ul>
-              )}
-              {initiative.id !== "social-proof" && active && initiative.pages.length > 1 && (
-                <ul className="bz-subnav mt-1 mb-2 ml-12 space-y-0.5 pl-3">
-                  {initiative.pages.map((page, index) => {
-                    const pageHash = `#${initiative.id}-${page.id}`;
-                    const isCurrent = hash ? hash === pageHash : index === 0;
-                    return (
-                      <li key={page.id}>
-                        <a href={pageHash} aria-current={isCurrent ? "true" : undefined}>
-                          {page.label}
-                        </a>
-                      </li>
-                    );
-                  })}
                 </ul>
               )}
             </li>

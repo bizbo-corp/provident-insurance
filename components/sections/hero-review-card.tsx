@@ -1,7 +1,6 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import { ExternalLink } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   GOOGLE_REVIEWS_ID,
@@ -17,8 +16,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Proposal item 2: the page's reviews, moved up beneath the hero CTA, with the
- * overall Google rating underneath. Same card language as GoogleReviews, in a
- * compact size: no wider than half the red panel on desktop, like the phone layout.
+ * overall Google rating combined into the foot of the same card. Same card language
+ * as GoogleReviews, in a compact size: no wider than half the red panel on desktop.
  */
 const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -54,35 +53,45 @@ function scrollToReviews(reducedMotion: boolean) {
   requestAnimationFrame(step);
 }
 
-/** Stars and the quote, clamped to three lines. Shared with the review site's preview. */
+/** The quote, clamped to three lines. The overall star rating sits at the foot of the card instead. Shared with the review site's preview. */
 export function HeroReviewQuote({ review }: { review: GoogleReview }) {
   return (
-    <>
-      <Stars score={5} className="text-base" />
-      <blockquote className="mt-2 line-clamp-3 text-base leading-relaxed text-dark-grey">
-        “{review.quote}”
-      </blockquote>
-    </>
+    <blockquote className="line-clamp-3 text-base leading-relaxed text-dark-grey lg:text-lg">
+      “{review.quote}”
+    </blockquote>
   );
 }
 
-/** Reviewer, when it was posted, and the link out to Google. Shared with the review site's preview. */
+const UNITS: Record<string, string> = { day: "d", week: "w", month: "mo", year: "y" };
+
+/** "3 months ago" becomes "3mo ago" and "a year ago" becomes "1y ago", so the footer fits on one line. */
+export function shortPosted(posted: string) {
+  const match = posted.match(/^(a|an|\d+) (day|week|month|year)s? ago$/);
+  if (!match) return posted;
+  const count = /^\d+$/.test(match[1]) ? match[1] : "1";
+  return `${count}${UNITS[match[2]]} ago`;
+}
+
+/** Reviewer, when it was posted, and the link out to Google, kept to one line. Shared with the review site's preview. */
 export function HeroReviewFooter({ review }: { review: GoogleReview }) {
   return (
-    <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs">
-      <p>
-        <span className="font-bold text-dark-grey">{review.author}</span>
-        <span className="text-dark-grey/70"> · {review.posted}</span>
+    <figcaption className="mt-3 flex items-center gap-4 text-xs whitespace-nowrap">
+      {/* Only the name gives way if space runs out. */}
+      <p className="flex min-w-0 items-center">
+        <span className="truncate font-bold text-dark-grey">{review.author}</span>
+        <span className="shrink-0 text-dark-grey/70">
+          &nbsp;· <span aria-hidden="true">{shortPosted(review.posted)}</span>
+          <span className="sr-only">{review.posted}</span>
+        </span>
       </p>
       <a
         href={review.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="relative z-10 inline-flex items-center gap-1 font-bold text-dark-grey no-underline hover:underline hover:opacity-100"
+        className="relative z-10 inline-flex shrink-0 items-center gap-1 font-bold text-dark-grey no-underline hover:underline hover:opacity-100"
       >
         <GoogleMark className="size-3.5" />
         Read on Google
-        <ExternalLink className="size-3" aria-hidden="true" />
         <span className="sr-only">(review by {review.author}, opens in a new tab)</span>
       </a>
     </figcaption>
@@ -150,8 +159,8 @@ export function HeroReviewCard({
       }}
     >
       <div className="overflow-hidden rounded-card bg-white shadow-md">
-        {/* Same horizontal padding as the red panel above, so the review text lines up with the headline. Vertical padding is half of it. */}
-        <div className="px-4 py-2 lg:px-8 lg:py-4">
+        {/* Same horizontal padding as the red panel above, so the review text lines up with the headline. */}
+        <div className="px-4 pt-4 pb-3 lg:px-8 lg:pt-5">
           <div
             ref={emblaRef}
             className="overflow-hidden transition-[height] duration-300 ease-out motion-reduce:transition-none"
@@ -193,47 +202,22 @@ export function HeroReviewCard({
               ))}
             </div>
           </div>
-
-          {/* Dots sit inside the card, centred under the review. */}
-          {reviews.length > 1 && (
-            <div className="mt-5 flex justify-center">
-              {reviews.map((review, index) => (
-                <button
-                  key={review.url}
-                  type="button"
-                  aria-label={`Go to review ${index + 1}`}
-                  aria-current={index === selected}
-                  onClick={() => embla?.scrollTo(index, reducedMotion)}
-                  className="flex size-7 items-center justify-center hover:opacity-100"
-                >
-                  <span
-                    className={cn(
-                      "block size-2.5 rounded-full border border-dark-grey transition-colors",
-                      index === selected && "bg-dark-grey",
-                    )}
-                  />
-                </button>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* The overall Google rating sits under the card as a summary, on a white pill so it reads over the photo, left-aligned with the card. */}
-      <div className="mt-3 flex">
+        {/* The overall Google rating, combined into the card under a hairline. */}
         <a
           href={rating.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 rounded-full bg-white px-4 py-2 no-underline shadow-md hover:opacity-100"
+          className="flex items-center gap-3 border-t border-lighter-grey px-4 py-3 no-underline hover:opacity-100 lg:px-8"
         >
-          <span className="text-xl leading-none font-bold text-dark-grey">
+          <span className="text-2xl leading-none font-bold text-dark-grey">
             {rating.score.toFixed(1)}
           </span>
-          <span className="flex flex-col gap-0.5">
-            <Stars score={rating.score} className="text-sm" />
-            <span className="flex items-center gap-1.5 text-[11px] text-dark-grey">
-              <GoogleMark className="size-3" />
+          <span className="flex flex-col gap-1">
+            <Stars score={rating.score} className="text-base" />
+            <span className="flex items-center gap-1.5 text-xs text-dark-grey">
+              <GoogleMark className="size-3.5" />
               <span className="underline underline-offset-4">
                 Average from over {rating.count.toLocaleString("en-NZ")} Google
                 reviews
@@ -243,6 +227,29 @@ export function HeroReviewCard({
           <span className="sr-only">(opens Google in a new tab)</span>
         </a>
       </div>
+
+      {/* Dots sit under the card: the current review in red, the rest white. On phones the card sits on white, so the white dots get a grey ring. */}
+      {reviews.length > 1 && (
+        <div className="mt-2 flex justify-center">
+          {reviews.map((review, index) => (
+            <button
+              key={review.url}
+              type="button"
+              aria-label={`Go to review ${index + 1}`}
+              aria-current={index === selected}
+              onClick={() => embla?.scrollTo(index, reducedMotion)}
+              className="flex size-7 items-center justify-center hover:opacity-100"
+            >
+              <span
+                className={cn(
+                  "block size-2.5 rounded-full shadow-sm transition-colors",
+                  index === selected ? "bg-primary" : "bg-white ring-1 ring-dark-grey/40 lg:ring-0",
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

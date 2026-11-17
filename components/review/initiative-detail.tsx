@@ -28,26 +28,19 @@ export function Scores({ scores, className }: { scores: NonNullable<Initiative["
 }
 
 export const hasOptionalParts = (initiative: Initiative) =>
-  initiative.change.some((item) => typeof item !== "string");
+  initiative.change.some((item) => typeof item !== "string" && item.optional);
 
 export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   return (
     <article className="space-y-8">
-      {/* Title, scores and the proposal's words on the left; the proposal's wireframe on the right. */}
+      {/* Title, scores and the lead on the left; the proposal's wireframe on the right. */}
       <header className={cn("grid items-start gap-8", initiative.wireframe && "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]")}>
         <div className="min-w-0">
           <p className="bz-eyebrow">{initiative.ref}</p>
           <h1 className="bz-h2 mt-3">{initiative.title}</h1>
-          <p className="bz-muted mt-3 text-sm">
-            Appears on: {initiative.pages.map((page) => page.label).join(", ")}
-          </p>
-          {initiative.scores && <Scores scores={initiative.scores} className="mt-6 max-w-sm" />}
-          {initiative.proposal && (
-            <div className="mt-8">
-              <h2 className="bz-eyebrow">From the proposal</h2>
-              <blockquote className="bz-quote mt-3 leading-relaxed">“{initiative.proposal}”</blockquote>
-            </div>
-          )}
+          {/* One lead paragraph: what's wrong today, which also covers the proposal's aim. */}
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed">{initiative.problem}</p>
+          {initiative.scores && <Scores scores={initiative.scores} className="mt-8 max-w-sm" />}
         </div>
         {initiative.wireframe && (
           <figure className="min-w-0">
@@ -62,28 +55,47 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
         )}
       </header>
 
-      {/* One box: the problem on the left, what changed on the right, split by a hairline. */}
+      {/* One box: the solution in a line on the left, what changes on the right, split by a hairline. */}
       <div className="bz-cell grid md:grid-cols-[1fr_1.4fr]">
         <div className="p-5 md:p-6">
-          <h2 className="bz-eyebrow bz-warn">The problem</h2>
-          <p className="mt-3 text-lg leading-relaxed">{initiative.problem}</p>
+          <h2 className="bz-eyebrow">The solution</h2>
+          <p className="mt-3 text-lg leading-relaxed">{initiative.solution}</p>
         </div>
         <div className="border-t border-[var(--hairline)] p-5 md:border-t-0 md:border-l md:p-6">
-          <h2 className="bz-eyebrow">What changed</h2>
+          <h2 className="bz-eyebrow">What changes</h2>
           <ul className="mt-3 space-y-3 leading-relaxed">
             {initiative.change.map((item) => {
               const text = typeof item === "string" ? item : item.text;
               return (
                 <li key={text} className="flex gap-3">
                   <DuotoneTick className="mt-0.5 shrink-0" />
-                  <span>
+                  <div>
                     {text}
-                    {typeof item !== "string" && <OptionalBadge className="ml-2 align-middle" />}
-                  </span>
+                    {typeof item !== "string" && item.optional && <OptionalBadge className="ml-2 align-middle" />}
+                    {typeof item !== "string" && item.sub && (
+                      <ul className="mt-1.5 space-y-1">
+                        {item.sub.map((point) => (
+                          <li key={point} className="flex gap-2 pl-1">
+                            <span className="bz-muted" aria-hidden="true">-</span>
+                            {point}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </li>
               );
             })}
           </ul>
+          {initiative.changeNote && (
+            <p className="bz-muted mt-5 flex gap-3 border-t border-[var(--hairline)] pt-4 text-sm leading-relaxed">
+              <span className="bz-note-mark mt-0.5 shrink-0" aria-hidden="true">i</span>
+              <span>
+                <span className="sr-only">Note: </span>
+                {initiative.changeNote}
+              </span>
+            </p>
+          )}
         </div>
       </div>
 

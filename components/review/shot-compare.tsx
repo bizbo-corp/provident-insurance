@@ -46,28 +46,28 @@ const DEVICES: { id: Device; label: string }[] = [
   { id: "m", label: "Mobile" },
 ];
 
-/** Before and after side by side, with a desktop or mobile switch. The screenshots are Provident's site, so their frames stay white. */
-export function ShotCompare({ shots }: { shots: ReviewShot[] }) {
+/**
+ * Before and after side by side, with a desktop or mobile switch. The screenshots are Provident's site, so their frames stay white.
+ * `toolbar` sits on the same line as the switch. `spacious` separates each example with a hairline and more room, for long lists.
+ */
+export function ShotCompare({ shots, toolbar, spacious = false }: { shots: ReviewShot[]; toolbar?: React.ReactNode; spacious?: boolean }) {
   const [device, setDevice] = useState<Device>("d");
   return (
-    <div className="space-y-6">
-      <div role="radiogroup" aria-label="Screen size" className="bz-segment">
-        {DEVICES.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            role="radio"
-            aria-checked={device === option.id}
-            onClick={() => setDevice(option.id)}
-          >
-            {option.label}
-          </button>
-        ))}
+    <div className={spacious ? "space-y-10" : "space-y-6"}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div role="radiogroup" aria-label="Screen size" className="bz-segment">
+          {DEVICES.map((option) => (
+            <button key={option.id} type="button" role="radio" aria-checked={device === option.id} onClick={() => setDevice(option.id)}>
+              {option.label}
+            </button>
+          ))}
+        </div>
+        {toolbar}
       </div>
-      {shots.map((shot) => (
-        <div key={shot.id}>
+      {shots.map((shot, index) => (
+        <div key={shot.id} className={cn(spacious && index > 0 && "border-t border-[var(--hairline)] pt-10")}>
           {(shots.length > 1 || shot.optional || shot.note) && (
-            <div className="mb-3">
+            <div className={spacious ? "mb-5" : "mb-3"}>
               <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                 {shot.caption}
                 {shot.optional && <OptionalBadge />}
@@ -75,10 +75,14 @@ export function ShotCompare({ shots }: { shots: ReviewShot[] }) {
               {shot.note && <p className="bz-muted mt-1 max-w-3xl text-sm leading-relaxed">{shot.note}</p>}
             </div>
           )}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Shot id={shot.id} device={device} state="before" tall={shot.tall} />
-            <Shot id={shot.id} device={device} state="after" tall={shot.tall} />
-          </div>
+          {shot.desktopOnly && device === "m" ? (
+            <p className="bz-muted text-sm">Desktop only. On phones the header scrolls away as it does now.</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Shot id={shot.id} device={device} state="before" tall={shot.tall} />
+              <Shot id={shot.id} device={device} state="after" tall={shot.tall} />
+            </div>
+          )}
         </div>
       ))}
     </div>

@@ -8,7 +8,8 @@ import type { FeatureId } from "@/lib/variants";
 
 /** `optional` marks a shot of an optional extra rather than the core change. */
 /** `note` explains what to look for in this pair. */
-export type ReviewShot = { id: string; caption: string; note?: string; tall?: boolean; optional?: boolean };
+/** `desktopOnly` marks a change phones don't get, so the mobile view says so instead of showing images. */
+export type ReviewShot = { id: string; caption: string; note?: string; tall?: boolean; optional?: boolean; desktopOnly?: boolean };
 
 /** One page (or quote step) where an initiative shows up. */
 export type InitiativePage = {
@@ -30,13 +31,18 @@ export type Initiative = {
   /** Ratings from the proposal, where it gives them. */
   scores?: { impact: number; effort: number };
   title: string;
-  /** The proposal's own recommendation, quoted so the client can match it. */
+  /** The proposal's own recommendation, kept for reference. The page leads with `problem` instead. */
   proposal?: string;
   /** The proposal's wireframe for this initiative, in public/review. */
   wireframe?: { src: string; alt: string };
+  /** What's wrong on the live site: the page's lead paragraph. */
   problem: string;
-  /** A `{ text, optional }` item is an extra beyond what the proposal describes. */
-  change: (string | { text: string; optional: true })[];
+  /** The fix in one short line. */
+  solution: string;
+  /** A `{ text, optional }` item is an extra beyond what the proposal describes; `sub` lists indented points under an item. */
+  change: (string | { text: string; optional?: true; sub?: string[] })[];
+  /** A side note shown under "What changes", set apart from the list with an info mark. */
+  changeNote?: string;
   /** Questions or approvals needed from Provident. */
   asks?: string[];
   pages: InitiativePage[];
@@ -65,16 +71,19 @@ export const initiatives: Initiative[] = [
     proposal:
       "Make the page more scannable and easier to understand. Every tick sits in a single column down the right-hand side. Sections are chunked into meaningful categories, each with an icon. Structure only: no copy changes and no re-approval of wording.",
     problem:
-      "The live table lists 19 benefits in one long run with only two small dividers. It's hard to see which benefits belong together, and on a phone the ticks fall onto separate lines from the benefit names, which makes the table very long.",
+      "The current table lists 19 benefits in one long run, which is harder to take in and adds cognitive load for anyone trying to understand what each cover includes.",
+    solution: "Group the benefits into clear, labelled sections so each cover is quick to compare.",
     change: [
-      "Benefits are grouped under five headings with icons: Damage & loss, Damage involving someone else, Additional benefits, Because you're with Provident, and Optional extras.",
-      "Ticked cells are shaded pink, so it's clear at a glance what each cover includes.",
-      "Clearer column headings and group headings make the groups easy to tell apart.",
-      "Within each group, benefits shared by other covers sit at the bottom, so matching ticks line up.",
-      "On phones each benefit and its ticks fit on one line, making the table shorter.",
-      "Policy documents sit inside the table under each cover, as simple links.",
-      "Apart from the categorisation and ordering changes, no copy or headings have been changed.",
+      {
+        text: "Benefits are grouped under five headings with icons:",
+        sub: ["Damage & loss", "Damage involving someone else", "Additional benefits", "Because you're with Provident", "Optional extras"],
+      },
+      "Clearer column headings and group headings make the benefits easier to scan and digest.",
+      "Within each group, benefits are ordered so matching ticks stack neatly down each column.",
+      "On mobile (an estimated 50% of traffic), each benefit and its ticks fit on one line, making the table easier to scan and compare at a glance.",
+      "Policy documents sit under each cover type as simple links, so they don't compete with the Get a quote call to action.",
     ],
+    changeNote: "Apart from the categorisation and ordering changes, no copy or headings have been changed.",
     asks: ["Are you happy with the five group headings and which benefits sit under each?"],
     pages: [
       {
@@ -97,13 +106,12 @@ export const initiatives: Initiative[] = [
     proposal:
       "Add trust signals (customer reviews with star rating) to the Car Insurance and Home page, below the CTA box.",
     problem:
-      "Provident's Google rating is strong, but on the live pages visitors only meet reviews after several screens of scrolling. The first screen asks for a quote without giving a reason to trust the company. Further down, the testimonials are two short quotes with first names only (Andy and Andrew, August 2025), the same on every page and impossible to check.",
+      "Provident's Google rating is strong, but currently visitors only meet reviews after several screens of scrolling, far below the main call to action.",
+    solution: "Show Provident's strong Google reviews and rating right under the main call to action, as social proof that builds trust and encourages people to start a quote.",
     change: [
-      "A review card sits under the hero call to action, showing reviews chosen for that page.",
-      "Clicking a review takes you to the full Google reviews section further down the page.",
-      "The Google rating, 4.7 stars from over 687 reviews, sits below the card and links to Google.",
+      "A review card sits under the hero call to action, showing standout Google reviews alongside Provident's rating: 4.7 stars from over 687 reviews.",
+      "Clicking a review scrolls down to the Google reviews section, where that review can be read in full.",
       "The testimonials further down each page become a Google reviews section, with real reviews chosen for that page and a link to each on Google.",
-      "Reviewers can browse the reviews section with arrows or by swiping, and long reviews open with Read more.",
     ],
     asks: [
       "The rating and review count are a snapshot from 16 November 2026. Refresh them every three months.",
@@ -143,22 +151,32 @@ export const initiatives: Initiative[] = [
     proposal:
       "Redesign the progress indicator so overall journey length and current position are explicit (labelled steps, step count or percentage).",
     problem:
-      "The live quote shows an unlabelled red bar and a small step badge. People can't tell how many steps are left or what comes next, which is a common reason for leaving a form part way through.",
+      "The current quote shows a single unlabelled red bar and a small step badge. People can't accurately tell how far through they are or what comes next, a common reason people abandon a form part way through.",
+    solution: "Rework the progress bar to show live, question-by-question progress in a refined, pared-back design that's easy to glance at without distracting from the task at hand.",
     change: [
-      "The header shows three labelled stages: Car, Driver and Cover Options. The quote is complete after Cover Options, so payment isn't a step.",
-      "Each stage is sized by its number of questions, so Car, the longest, takes the most room.",
+      { text: "Progress is simplified to three labelled stages:", sub: ["Car", "Driver", "Cover Options"] },
+      "Each stage's width reflects how many questions it holds.",
       "The bar fills as each question is answered.",
       "On desktop, once the header scrolls away, a slim copy of the progress bar stays at the top.",
-      "The header changes from black to Provident's light grey, to match the main website.",
-      "The 'Your quote is ready to go' banner is removed, so there's less competing for attention.",
+      "The header changes from black to Provident's light grey, which is less dominant and matches the main website, including the updated logo.",
+      "The 'Your quote is ready to go' banner is removed, simplifying an already busy quote complete page.",
     ],
+    changeNote: "On the quote complete page only, the header is no longer sticky. The Back and Continue footer stays in view instead.",
     pages: [
       {
         id: "car-step",
         label: "Your car step",
         path: "/quote/car",
         summary: "The first step, with Car highlighted and filling as each question is answered.",
-        shots: [{ id: "quote-header", caption: "Header and progress" }],
+        shots: [
+          { id: "quote-header", caption: "Header and progress" },
+          {
+            id: "quote-sticky",
+            caption: "Slim progress bar once the header scrolls away",
+            note: "Currently, the progress bar scrolls away with the header. In version 2 a slim copy stays at the top on desktop, so progress is always in view.",
+            desktopOnly: true,
+          },
+        ],
       },
       {
         id: "quote-step",
@@ -181,20 +199,34 @@ export const initiatives: Initiative[] = [
       "Reserve the brand red for identity and primary CTAs; move warning and exclusion callouts to a neutral treatment.",
     problem:
       "Information panels in the quote use pink backgrounds and red text, the same colours people associate with errors. 'Your quote is ready to go' and the additional excess note both read as warnings, though neither is a problem.",
+    solution: "Keep red for actions and real errors, and use neutral grey for information.",
     change: [
-      "Information panels are now white with a grey outline. Red is kept for actions and real errors.",
+      "Light grey panels now highlight key information, such as the found vehicle and notices, while red is kept for actions and real errors.",
       "The 'Your quote is ready to go' banner is removed, as part of Initiative 03.",
-      "The red step badge is removed, since the new progress header shows where you are.",
+      "Red items that could be mistaken for errors or warnings, such as the step badge, are removed, since the new progress header shows where you are.",
     ],
     pages: [
+      {
+        id: "car-step",
+        label: "Your car step",
+        path: "/quote/car",
+        summary: "The vehicle found from the plate lookup.",
+        shots: [
+          {
+            id: "quote-vehicle",
+            caption: "Light grey highlights key information",
+            note: "Currently, the found vehicle is plain text that gets lost among visually similar items. In version 2 it sits in a light grey panel, the same treatment used for other key details, so it subtly stands out and confirms the lookup worked.",
+          },
+        ],
+      },
       {
         id: "quote-step",
         label: "Quote step",
         path: "/quote/cover",
-        summary: "The top of the quote step, and the additional excess notice under the excess picker.",
+        summary: "The additional excess notice under the excess picker, and the top of the quote step.",
         shots: [
-          { id: "quote-cover-top", caption: "Top of the quote step" },
           { id: "quote-notice", caption: "Additional excess notice" },
+          { id: "quote-cover-top", caption: "Top of the quote step" },
         ],
       },
     ],
@@ -210,28 +242,25 @@ export const initiatives: Initiative[] = [
     proposal:
       "Introduce a clear secondary button style so important actions (e.g. Find my car, Update excess) visually outrank elements of less importance. Maintain the primary red as the main CTA on each page.",
     problem:
-      "Several buttons on live look disabled when they aren't, and Back is a full-width button with the same weight as Next. 'Find my Car' is a pale outline even when it's ready to press, and 'Update' looks greyed out.",
+      "Currently, buttons have no clear order of importance, which can confuse people or add cognitive load. Several look disabled when they aren't: 'Find my Car' is a pale outline even when it's ready to press, and 'Update' looks greyed out. Back is a full-width button with the same weight as Next, the primary action.",
+    solution: "Give buttons a clear order of importance, with red kept for the main action.",
     change: [
-      "'Find my Car' is a solid dark button once a plate is entered.",
-      "The found vehicle appears in a tinted panel, so it's clear the lookup worked.",
-      "'Update' on the car value is a solid dark button rather than a washed-out one.",
-      "Back is a smaller outlined button beside Next, so red stays the one main action.",
-      { text: "Back and Next stay at the bottom of the screen, so the next step is always in reach.", optional: true },
-      "Long button labels wrap onto two lines on small phones rather than being cut off.",
+      "A new solid dark secondary style for supporting actions such as 'Find my Car' and 'Update' makes the way forward clearer than the current washed-out buttons.",
+      "The main action on each page keeps Provident's primary red, so it's always the most prominent button.",
+      "Back is a smaller outlined button instead of a full-width one.",
     ],
     pages: [
       {
         id: "car-step",
         label: "Your car step",
         path: "/quote/car",
-        summary: "Find my Car with a plate entered, and the vehicle it finds.",
+        summary: "Find my Car with a plate entered.",
         shots: [
           {
             id: "quote-find-car",
             caption: "Find my Car, with a plate entered",
-            note: "On live, Find my Car is a pale outline and looks disabled. In version 2 it's a solid dark button, ready to press.",
+            note: "Currently, Find my Car is a pale outline and looks disabled. In version 2 it's a solid dark button, ready to press.",
           },
-          { id: "quote-vehicle", caption: "Vehicle found" },
         ],
       },
       {
@@ -243,12 +272,12 @@ export const initiatives: Initiative[] = [
           {
             id: "quote-update",
             caption: "Car value Update button",
-            note: "On live, Update is washed out until the value changes, so it reads as switched off. In version 2 it's a solid dark secondary button.",
+            note: "Currently, Update is washed out until the value changes, so it reads as switched off. In version 2 it's a solid dark secondary button.",
           },
           {
             id: "quote-actions",
             caption: "Back and Next",
-            note: "On live, Back is a full-width button under Next with the same weight. In version 2 Back is a smaller outlined button beside Next, so red stays the one main action.",
+            note: "Currently, Back is a full-width button under Next with the same weight. In version 2 Back is a smaller outlined button beside Next, so red stays the one main action.",
           },
         ],
       },

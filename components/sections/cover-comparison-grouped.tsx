@@ -49,7 +49,12 @@ export function CoverComparisonGrouped() {
         {coverComparison.columns.map((column, index) => (
           <div
             key={column.name}
-            className={cn("flex flex-col justify-center px-1 py-4 text-center md:px-2", index > 0 && COLUMN_RULE)}
+            className={cn(
+              "flex flex-col justify-center px-1 py-4 text-center md:px-2",
+              index > 0 && COLUMN_RULE,
+              // The most popular cover gets a soft brand tint and a red cap, so it stands out as the pick.
+              index === 0 && "border-t-4 border-primary bg-quote-notice"
+            )}
           >
             <div className="text-[11px] leading-tight font-bold [overflow-wrap:anywhere] sm:text-xs md:text-sm lg:text-base">{column.name}</div>
             {column.badge && (
@@ -89,7 +94,7 @@ export function CoverComparisonGrouped() {
                       )}
                     >
                       {/* On phones every note wraps at the same width, so "Optional extra" breaks onto two lines in every column. */}
-                      <CoverCellMark cell={cell} noteClassName="mx-auto max-w-[4.75em] sm:max-w-none sm:whitespace-nowrap" />
+                      <CoverCellMark cell={cell} enhanced noteClassName="mx-auto max-w-[4.75em] sm:max-w-none sm:whitespace-nowrap" />
                     </div>
                   ))}
                 </div>

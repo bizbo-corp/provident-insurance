@@ -60,7 +60,7 @@ export function QuoteNotice({ title, children }: { title?: string; children: Rea
     <div
       className={cn(
         "space-y-4 rounded-lg p-4 text-sm",
-        neutral ? "border border-black/15 bg-white text-quote-ink" : "bg-quote-notice text-quote-notice-ink"
+        neutral ? "bg-light-grey text-quote-ink" : "bg-quote-notice text-quote-notice-ink"
       )}
     >
       {title && <p className={cn("font-bold", !neutral && "text-primary-dark")}>{title}</p>}
@@ -95,7 +95,7 @@ export function ChoiceGroup<T extends string>({
   );
 }
 
-/** Next and Back at the foot of every step. */
+/** Next and Back at the foot of every step. In version 2 they match the 56px fields and buttons above them. */
 export function QuoteStepActions({
   nextLabel,
   onNext,
@@ -107,12 +107,12 @@ export function QuoteStepActions({
 }) {
   const hierarchy = useFeature("button-hierarchy");
   const next = nextLabel && onNext && (
-    <QuoteButton variant="next" className={cn(hierarchy && "h-auto min-h-10 w-auto flex-1 py-2 leading-tight")} onClick={onNext}>
+    <QuoteButton variant="next" className={cn(hierarchy && "h-auto min-h-14 w-auto flex-1 py-2 leading-tight")} onClick={onNext}>
       {nextLabel}
     </QuoteButton>
   );
   const back = onBack && (
-    <QuoteButton variant={hierarchy ? "back-strong" : "back"} onClick={onBack}>Back</QuoteButton>
+    <QuoteButton variant={hierarchy ? "back-strong" : "back"} className={cn(hierarchy && "h-14")} onClick={onBack}>Back</QuoteButton>
   );
 
   if (hierarchy) {

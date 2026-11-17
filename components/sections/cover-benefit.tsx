@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Minus } from "lucide-react";
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { CoverCell, CoverComparisonRow } from "@/content/types";
@@ -11,14 +12,29 @@ export type BenefitRowData = Extract<CoverComparisonRow, { label: string }>;
 export function CoverCellMark({
   cell,
   noteClassName,
+  enhanced = false,
 }: {
   cell: CoverCell;
   noteClassName?: string;
+  /**
+   * After state only, matching the quote's cover table: optional extras get a blue tick,
+   * and anything not included is a plain dash instead of a circled cross.
+   */
+  enhanced?: boolean;
 }) {
+  const optional = enhanced && cell.included && cell.note === "Optional extra";
+  if (enhanced && !cell.included) {
+    return (
+      <>
+        <Minus className="size-4 text-black/50 md:size-6" aria-hidden="true" />
+        <span className="sr-only">Not included</span>
+      </>
+    );
+  }
   return (
     <>
       <Image
-        src={`/images/benefit-${cell.included ? "included" : "excluded"}.svg`}
+        src={`/images/benefit-${optional ? "optional" : cell.included ? "included" : "excluded"}.svg`}
         alt={cell.included ? "Included" : "Not included"}
         width={24}
         height={24}

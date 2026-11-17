@@ -44,8 +44,9 @@ export function QuoteShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
       ) : null}
-      {labelledSteps && (
+      {labelledSteps && step.slug !== "cover" && (
         // Desktop only: once the header scrolls away, a slim copy of the bar stays at the top.
+        // Not on the quote step, where the Back and Continue footer is the sticky element instead.
         <div
           aria-hidden="true"
           className={cn(

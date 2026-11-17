@@ -28,7 +28,7 @@ export function Tick({ className }: { className?: string }) {
   );
 }
 
-/** Lichen tick in a soft Lichen disc, for "What changed" lists. Drawn, not from an icon set. */
+/** Lichen tick in a soft Lichen disc, for "What changes" lists. Drawn, not from an icon set. */
 export function DuotoneTick({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={cn("size-5", className)} aria-hidden="true">
