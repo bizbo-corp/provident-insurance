@@ -5,7 +5,7 @@ import { getFeedback, saveFeedback, storeEnabled, type FeedbackEntry } from "@/l
 export async function GET(request: Request) {
   if (!storeEnabled) return NextResponse.json({ enabled: false }, { status: 404 });
   const reviewer = new URL(request.url).searchParams.get("reviewer")?.trim();
-  if (!reviewer) return NextResponse.json({ error: "Missing reviewer" }, { status: 400 });
+  if (!reviewer) return NextResponse.json({ enabled: true });
   return NextResponse.json({ enabled: true, entries: await getFeedback(reviewer) });
 }
 
@@ -19,10 +19,16 @@ export async function PUT(request: Request) {
   }
   const entries: Record<string, FeedbackEntry> = {};
   for (const [id, entry] of Object.entries(body.entries).slice(0, 100)) {
+    const comments = Array.isArray(entry?.comments) ? entry.comments : [];
     entries[id] = {
       label: String(entry?.label ?? id).slice(0, 200),
       verdict: entry?.verdict === "approved" || entry?.verdict === "changes" ? entry.verdict : null,
-      note: String(entry?.note ?? "").slice(0, 5000),
+      comments: comments.slice(0, 200).map((comment) => ({
+        id: String(comment?.id ?? "").slice(0, 40),
+        text: String(comment?.text ?? "").slice(0, 5000),
+        author: String(comment?.author ?? reviewer).slice(0, 60),
+        at: Number(comment?.at) || Date.now(),
+      })),
       updatedAt: Number(entry?.updatedAt) || Date.now(),
     };
   }

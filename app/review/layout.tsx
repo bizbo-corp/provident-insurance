@@ -27,7 +27,7 @@ export default function ReviewLayout({ children }: { children: React.ReactNode }
         <header className="bz-header">
           <div className="mx-auto flex max-w-[1200px] flex-wrap items-end justify-between gap-4 px-5 py-6 md:px-12">
             <Link href="/review">
-              <span className="bz-eyebrow block">Provident Insurance / Website version 2</span>
+              <span className="bz-eyebrow block">Provident Insurance / Conversion Optimisation</span>
               <span className="bz-h3 mt-2 block">Review of the proposed changes</span>
             </Link>
             <div className="bz-wordmark flex flex-col items-start gap-2 sm:items-end sm:text-right">

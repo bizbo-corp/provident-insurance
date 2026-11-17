@@ -46,7 +46,7 @@ export default async function AllFeedbackPage({ searchParams }: { searchParams: 
     .map((reviewer) => ({
       ...reviewer,
       items: Object.entries(reviewer.entries)
-        .filter(([, entry]) => entry.verdict || entry.note.trim())
+        .filter(([, entry]) => entry.verdict || entry.comments.length)
         .sort(([a], [b]) => a.localeCompare(b, "en", { numeric: true })),
     }))
     .sort((a, b) => a.reviewer.localeCompare(b.reviewer));
@@ -71,8 +71,8 @@ export default async function AllFeedbackPage({ searchParams }: { searchParams: 
                 <thead>
                   <tr>
                     <th className="py-2 pr-4">Item</th>
-                    <th className="py-2 pr-4">Verdict</th>
-                    <th className="py-2 pr-4">Comment</th>
+                    <th className="py-2 pr-4">Status</th>
+                    <th className="py-2 pr-4">Comments</th>
                     <th className="py-2">Updated</th>
                   </tr>
                 </thead>
@@ -81,9 +81,18 @@ export default async function AllFeedbackPage({ searchParams }: { searchParams: 
                     <tr key={id} className="align-top">
                       <td className="py-3 pr-4 font-semibold">{entry.label}</td>
                       <td className="py-3 pr-4 whitespace-nowrap">
-                        {entry.verdict === "approved" ? "Approved" : entry.verdict === "changes" ? "Changes requested" : "Comment"}
+                        {entry.verdict === "approved" ? "Approved" : entry.verdict === "changes" ? "Changes requested" : "–"}
                       </td>
-                      <td className="py-3 pr-4 whitespace-pre-wrap">{entry.note.trim() || "–"}</td>
+                      <td className="py-3 pr-4">
+                        {entry.comments.length === 0
+                          ? "–"
+                          : entry.comments.map((comment) => (
+                              <p key={comment.id} className="mb-2 whitespace-pre-wrap last:mb-0">
+                                {comment.text}
+                                <span className="bz-muted block text-xs">{formatDate(comment.at)}</span>
+                              </p>
+                            ))}
+                      </td>
                       <td className="bz-muted py-3 whitespace-nowrap">{entry.updatedAt ? formatDate(entry.updatedAt) : "–"}</td>
                     </tr>
                   ))}

@@ -11,7 +11,24 @@
  */
 
 export type Verdict = "approved" | "changes" | null;
-export type FeedbackEntry = { label: string; verdict: Verdict; note: string; updatedAt: number };
+export type FeedbackComment = { id: string; text: string; author: string; at: number };
+export type FeedbackEntry = {
+  label: string;
+  verdict: Verdict;
+  comments: FeedbackComment[];
+  updatedAt: number;
+  /** Older entries kept one free-text note instead of comments. */
+  note?: string;
+};
+
+/** Turns an older single-note entry into the comment list. */
+export function normaliseEntry(entry: FeedbackEntry, author = ""): FeedbackEntry {
+  const comments = Array.isArray(entry.comments) ? entry.comments : [];
+  if (entry.note?.trim() && comments.length === 0) {
+    comments.push({ id: "note", text: entry.note.trim(), author, at: entry.updatedAt ?? 0 });
+  }
+  return { label: entry.label, verdict: entry.verdict ?? null, comments, updatedAt: entry.updatedAt ?? 0 };
+}
 export type ReviewerFeedback = { reviewer: string; entries: Record<string, FeedbackEntry> };
 
 const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
@@ -51,7 +68,7 @@ function parseEntries(flat: string[] | null) {
   const entries: Record<string, FeedbackEntry> = {};
   for (const [id, json] of Object.entries(pairs(flat))) {
     try {
-      entries[id] = JSON.parse(json);
+      entries[id] = normaliseEntry(JSON.parse(json));
     } catch {}
   }
   return entries;

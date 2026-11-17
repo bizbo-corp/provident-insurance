@@ -15,7 +15,7 @@ export function VariantToggle() {
   const pathname = usePathname();
 
   // The client review page links to before and after itself.
-  if (pathname.startsWith("/review")) return null;
+  if (pathname.startsWith("/review") || pathname.startsWith("/unlock")) return null;
 
   const isBefore = enabled.length === 0;
   const isAfter = enabled.length === ALL_FEATURES.length;
