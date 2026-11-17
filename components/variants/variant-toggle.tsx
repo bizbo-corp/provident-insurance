@@ -45,7 +45,7 @@ export function VariantToggle() {
         <button
           type="button"
           aria-pressed={isBefore}
-          className={cn(SEGMENT, isBefore && "bg-white text-black")}
+          className={cn(SEGMENT, isBefore && "bg-[#e09a85] font-semibold text-[#1d1d1f]")}
           onClick={() => setEnabled([])}
         >
           Before
@@ -53,7 +53,7 @@ export function VariantToggle() {
         <button
           type="button"
           aria-pressed={isAfter}
-          className={cn(SEGMENT, isAfter && "bg-white text-black")}
+          className={cn(SEGMENT, isAfter && "bg-[#98af3a] font-semibold text-[#293021]")}
           onClick={() => setEnabled(ALL_FEATURES)}
         >
           After

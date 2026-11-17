@@ -27,3 +27,13 @@ export function Tick({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** Lichen tick in a soft Lichen disc, for "What changed" lists. Drawn, not from an icon set. */
+export function DuotoneTick({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={cn("size-5", className)} aria-hidden="true">
+      <circle cx="10" cy="10" r="10" fill="var(--lichen)" fillOpacity="0.2" />
+      <path d="M6 10.4 8.7 13 14 7.2" fill="none" stroke="var(--lichen)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FeedbackControl } from "@/components/review/feedback";
+import { FeedbackControl, ReviewerLine } from "@/components/review/feedback";
 import { cn } from "@/lib/utils";
 import { hasEdits, WordDiff } from "@/components/review/word-diff";
 import {
@@ -31,6 +31,7 @@ const reviewSets: { id: string; title: string; status: string; reviews: GoogleRe
 ];
 
 const firstName = (name: string) => name.split(" ")[0].toLowerCase();
+const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: number; pageId: string }) {
   const note = reviewNotes[review.author];
@@ -79,6 +80,12 @@ function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: nu
           ))}
         </ul>
       )}
+      <FeedbackControl
+        embedded
+        id={`review-${pageId}-${slug(review.author)}`}
+        label={`Testimonial: ${review.author} (${reviewSets.find((set) => set.id === pageId)?.title ?? pageId})`}
+        placeholder="Suggest a change to the wording, or add a comment"
+      />
     </li>
   );
 }
@@ -97,8 +104,8 @@ export default function TestimonialsPage() {
                   </p>
                   <p>
                     Names are shown as first name and initial. Where we tidied spelling or punctuation, you can compare the
-                    reviewer&apos;s original words with what the site shows. We&apos;d like your approval on these edits, and we&apos;re happy
-                    to show any review exactly as written instead.
+                    reviewer&apos;s original words with what the site shows. Please approve each review or request changes, and
+                    suggest any wording you&apos;d prefer in its comments. We&apos;re happy to show any review exactly as written instead.
                   </p>
                 </div>
               </div>
@@ -107,6 +114,8 @@ export default function TestimonialsPage() {
                 These reviews feed the rating card under the hero and the Google reviews section further down each page, both
                 part of Initiative 02.
               </p>
+
+              <ReviewerLine />
 
               {reviewSets.map((set) => (
                 <div key={set.id} className="space-y-4">
@@ -123,7 +132,6 @@ export default function TestimonialsPage() {
                       <ReviewItem key={review.author} review={review} index={index} pageId={set.id} />
                     ))}
                   </ol>
-                  <FeedbackControl id={`reviews-${set.id}`} label={`Reviews: ${set.title}`} />
                 </div>
               ))}
 
@@ -133,7 +141,7 @@ export default function TestimonialsPage() {
                 <blockquote className="bz-quote leading-relaxed">“{pendingReview.original}”</blockquote>
                 <p className="text-sm"><span className="font-semibold">Why: </span>{pendingReview.why}</p>
                 <p className="text-sm font-semibold">{pendingReview.ask}</p>
-                <FeedbackControl id="reviews-glendyr" label="Glendyr's review (permission)" />
+                <FeedbackControl embedded id="reviews-glendyr" label="Glendyr's review (permission)" placeholder="Suggest a change, or add a comment" />
               </div>
 
               <div className="space-y-3">

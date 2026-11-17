@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { OptionalBadge } from "@/components/review/badges";
+import { LightboxImage } from "@/components/review/lightbox";
 import type { ReviewShot } from "@/content/review";
 import { SHOT_SIZES } from "@/content/review-shots";
 import { cn } from "@/lib/utils";
@@ -13,25 +14,27 @@ function Shot({ id, device, state, tall }: { id: string; device: Device; state: 
   const [width, height] = SHOT_SIZES[name] ?? [0, 0];
   return (
     <figure className="min-w-0">
-      <figcaption className="bz-figlabel mb-2 flex items-center gap-2">
-        <span className={cn("bz-pip", state === "after" && "bz-pip--live")} aria-hidden="true" />
-        {state === "before" ? "Before / live site" : "After / version 2"}
+      <figcaption className="mb-2">
+        <span className={cn("bz-state", state === "before" ? "bz-state--before" : "bz-state--after")}>
+          {state === "before" ? "Before" : "After"}
+          <small>{state === "before" ? "/ live site" : "/ version 2"}</small>
+        </span>
       </figcaption>
       <div
         className={cn(
-          "bz-shot overflow-auto",
+          "overflow-auto rounded-[2px]",
+          state === "before" ? "bz-shot--before" : "bz-shot--after",
           tall && "max-h-[640px]",
           device === "m" && "mx-auto max-w-[390px]"
         )}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <LightboxImage
           src={`/review/${name}.webp`}
           width={width}
           height={height}
-          loading="lazy"
+          tall={tall || device === "m"}
           alt={`${state === "before" ? "Before" : "After"}: ${id.replace(/-/g, " ")}, ${device === "d" ? "desktop" : "mobile"}`}
-          className="block h-auto w-full"
+          caption={`${state === "before" ? "Before / live site" : "After / version 2"}`}
         />
       </div>
     </figure>
@@ -63,13 +66,16 @@ export function ShotCompare({ shots }: { shots: ReviewShot[] }) {
       </div>
       {shots.map((shot) => (
         <div key={shot.id}>
-          {(shots.length > 1 || shot.optional) && (
-            <p className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold">
-              {shot.caption}
-              {shot.optional && <OptionalBadge />}
-            </p>
+          {(shots.length > 1 || shot.optional || shot.note) && (
+            <div className="mb-3">
+              <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+                {shot.caption}
+                {shot.optional && <OptionalBadge />}
+              </p>
+              {shot.note && <p className="bz-muted mt-1 max-w-3xl text-sm leading-relaxed">{shot.note}</p>}
+            </div>
           )}
-          <div className={cn("grid gap-6", device === "m" && "sm:grid-cols-2")}>
+          <div className="grid gap-4 sm:grid-cols-2">
             <Shot id={shot.id} device={device} state="before" tall={shot.tall} />
             <Shot id={shot.id} device={device} state="after" tall={shot.tall} />
           </div>

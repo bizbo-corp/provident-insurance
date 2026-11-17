@@ -25,7 +25,7 @@ export default function ReviewLayout({ children }: { children: React.ReactNode }
     <FeedbackProvider>
       <div data-surface="review" data-brand="bizbo" className={`${geist.variable} ${geistMono.variable}`}>
         <header className="bz-header">
-          <div className="mx-auto flex max-w-[1200px] flex-wrap items-end justify-between gap-4 px-5 py-6 md:px-12">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-5 py-6 md:px-8">
             <Link href="/review">
               <span className="bz-eyebrow block">Provident Insurance / Conversion Optimisation</span>
               <span className="bz-h3 mt-2 block">Review of the proposed changes</span>
@@ -36,15 +36,18 @@ export default function ReviewLayout({ children }: { children: React.ReactNode }
             </div>
           </div>
         </header>
-        <div className="mx-auto max-w-[1200px] gap-12 px-5 py-10 md:px-12 lg:grid lg:grid-cols-[248px_1fr]">
-          <aside className="mb-10 lg:mb-0">
-            <div className="lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-auto">
+        {/* Full width: the contents nav is pinned to the left edge, the page fills the rest. */}
+        <div className="lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="bz-sidebar border-b border-[var(--hairline)] px-3 py-6 lg:border-r lg:border-b-0">
+            <div className="lg:sticky lg:top-0 lg:max-h-screen lg:overflow-auto lg:py-2">
               <ReviewNav />
             </div>
           </aside>
-          <main className="min-w-0">
-            <ReviewerBar />
-            {children}
+          <main className="min-w-0 px-5 py-10 md:px-10 xl:px-14">
+            <div className="mx-auto max-w-[1080px]">
+              <ReviewerBar />
+              {children}
+            </div>
           </main>
         </div>
       </div>

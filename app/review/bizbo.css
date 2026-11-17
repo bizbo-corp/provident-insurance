@@ -358,6 +358,47 @@
   background: var(--lichen);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--lichen) 22%, transparent);
 }
+/* Before and after states: Madder and dashed for the live site, Lichen and solid for version 2. */
+.bz-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.bz-state--before {
+  border: 1px dashed var(--madder);
+  color: var(--madder);
+}
+.bz-state--after {
+  background: var(--lichen);
+  color: var(--lichen-ink);
+}
+.bz-state small {
+  font-size: inherit;
+  font-weight: 400;
+  opacity: 0.8;
+}
+.bz-shot--before {
+  border: 1px dashed color-mix(in srgb, var(--madder) 70%, transparent);
+  padding: 6px;
+  background: color-mix(in srgb, var(--madder) 8%, transparent);
+}
+.bz-shot--after {
+  border: 2px solid var(--lichen);
+  padding: 5px;
+  background: color-mix(in srgb, var(--lichen) 10%, transparent);
+}
+.bz-shot--before img,
+.bz-shot--after img {
+  background: #fff;
+}
+
 .bz-figlabel {
   font-family: var(--bz-mono);
   font-size: 11px;
@@ -628,4 +669,55 @@ svg.linework.bz-stepart-devices {
 }
 .bz-panel--raised .bz-segment button:not([aria-checked="true"]):hover {
   color: var(--root);
+}
+
+/* Lightbox: a thumbnail that opens the full image in a modal. */
+[data-brand="bizbo"] .bz-lightbox-thumb {
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  overflow: hidden;
+  background: #fff;
+}
+[data-brand="bizbo"] .bz-lightbox-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--zen);
+  color: var(--root);
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  transition: opacity 150ms var(--bz-ease);
+}
+[data-brand="bizbo"] .bz-lightbox-thumb:hover .bz-lightbox-hint,
+[data-brand="bizbo"] .bz-lightbox-thumb:focus-visible .bz-lightbox-hint {
+  opacity: 1;
+}
+.bz-lightbox {
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: var(--zen);
+  color: var(--root);
+  font-family: var(--bz-sans);
+}
+.bz-lightbox[open] {
+  display: flex;
+  flex-direction: column;
+}
+.bz-lightbox::backdrop {
+  background: rgba(20, 24, 16, 0.82);
+}
+
+/* The contents sidebar, pinned to the left edge of the screen. */
+.bz-sidebar {
+  background: color-mix(in srgb, var(--zen) 55%, transparent);
 }

@@ -233,35 +233,49 @@ function NameForm({ initial = "", onDone }: { initial?: string; onDone?: () => v
  * Asks for the reviewer's name when they first arrive, so it's stored against their
  * statuses and comments. Afterwards it shows who's reviewing and how feedback is saved.
  */
+const CHANGE_NAME_EVENT = "review:change-name";
+
+/** The name prompt: shown on the first visit, or when someone picks "Not you?". Sits once in the layout. */
 export function ReviewerBar() {
-  const { reviewer, ready, remote, saveState } = useFeedback();
+  const { reviewer, ready } = useFeedback();
   const [editing, setEditing] = useState(false);
   const pathname = usePathname();
 
+  useEffect(() => {
+    const open = () => setEditing(true);
+    window.addEventListener(CHANGE_NAME_EVENT, open);
+    return () => window.removeEventListener(CHANGE_NAME_EVENT, open);
+  }, []);
+
   // Not on Bizbo's own page of everyone's feedback.
   if (!ready || pathname.startsWith("/review/feedback/all")) return null;
+  if (reviewer && !editing) return null;
 
-  if (!reviewer || editing) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-5" role="dialog" aria-modal="true" aria-labelledby="reviewer-title">
-        <div className="bz-cell w-full max-w-md p-8">
-          <p className="bz-eyebrow">Provident review</p>
-          <h2 id="reviewer-title" className="bz-h3 mt-3">
-            {editing ? "Change your name" : "Welcome. Who's reviewing?"}
-          </h2>
-          <p className="bz-muted mt-3 text-sm">
-            Your name is saved with your approvals and comments, so we know who said what.
-          </p>
-          <NameForm initial={editing ? reviewer : ""} onDone={() => setEditing(false)} />
-          {editing && (
-            <button type="button" className="bz-muted mt-4 text-sm underline underline-offset-4" onClick={() => setEditing(false)}>
-              Cancel
-            </button>
-          )}
-        </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-5" role="dialog" aria-modal="true" aria-labelledby="reviewer-title">
+      <div className="bz-cell w-full max-w-md p-8">
+        <p className="bz-eyebrow">Provident review</p>
+        <h2 id="reviewer-title" className="bz-h3 mt-3">
+          {editing ? "Change your name" : "Welcome. Who's reviewing?"}
+        </h2>
+        <p className="bz-muted mt-3 text-sm">
+          Your name is saved with your approvals and comments, so we know who said what.
+        </p>
+        <NameForm initial={editing ? reviewer : ""} onDone={() => setEditing(false)} />
+        {editing && (
+          <button type="button" className="bz-muted mt-4 text-sm underline underline-offset-4" onClick={() => setEditing(false)}>
+            Cancel
+          </button>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+/** "Reviewing as X", with where the feedback is saved and a way to change the name. Sits with the feedback controls. */
+export function ReviewerLine({ className }: { className?: string }) {
+  const { reviewer, ready, remote, saveState } = useFeedback();
+  if (!ready || !reviewer) return null;
 
   const status =
     remote === "checking"
@@ -275,17 +289,30 @@ export function ReviewerBar() {
             : "Your feedback is saved and shared with Bizbo.";
 
   return (
-    <p className="bz-muted mb-8 text-sm" aria-live="polite">
+    <p className={cn("bz-muted text-sm", className)} aria-live="polite">
       Reviewing as <strong className="text-[var(--root)]">{reviewer}</strong>. {status}{" "}
-      <button type="button" className="underline underline-offset-4" onClick={() => setEditing(true)}>
+      <button type="button" className="underline underline-offset-4" onClick={() => window.dispatchEvent(new Event(CHANGE_NAME_EVENT))}>
         Not you?
       </button>
     </p>
   );
 }
 
-/** Status (approve or request changes) and a separate thread of comments for one item. */
-export function FeedbackControl({ id, label }: { id: string; label: string }) {
+/**
+ * Status and comments for one item. `embedded` drops the outer box so it can sit
+ * inside another card, such as a testimonial.
+ */
+export function FeedbackControl({
+  id,
+  label,
+  embedded = false,
+  placeholder = "Add a comment",
+}: {
+  id: string;
+  label: string;
+  embedded?: boolean;
+  placeholder?: string;
+}) {
   const { store, setVerdict, addComment, removeComment, reviewer } = useFeedback();
   const [draft, setDraft] = useState("");
   const entry = store[id];
@@ -302,8 +329,13 @@ export function FeedbackControl({ id, label }: { id: string; label: string }) {
   };
 
   return (
-    <div className="bz-cell p-5">
-      <p className="bz-eyebrow mb-3">Provident feedback</p>
+    <div className={embedded ? "bz-rule-top mt-4 pt-4" : "bz-cell p-5"}>
+      {!embedded && (
+        <div className="mb-4">
+          <p className="bz-eyebrow">Provident feedback</p>
+          <ReviewerLine className="mt-2" />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm font-semibold">Status</span>
@@ -329,7 +361,7 @@ export function FeedbackControl({ id, label }: { id: string; label: string }) {
         </div>
       </div>
 
-      <div className="bz-rule-top mt-5 pt-5">
+      <div className={embedded ? "mt-4" : "bz-rule-top mt-5 pt-5"}>
         <p className="text-sm font-semibold">Comments</p>
         {comments.length > 0 && (
           <ul className="mt-3 space-y-3">
@@ -371,7 +403,7 @@ export function FeedbackControl({ id, label }: { id: string; label: string }) {
                   submit();
                 }
               }}
-              placeholder="Add a comment"
+              placeholder={placeholder}
               className="bz-field"
             />
           </label>

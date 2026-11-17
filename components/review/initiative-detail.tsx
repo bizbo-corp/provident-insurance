@@ -1,8 +1,9 @@
-import { OptionalBadge, Tick } from "@/components/review/badges";
+import { DuotoneTick, OptionalBadge } from "@/components/review/badges";
+import { LightboxImage } from "@/components/review/lightbox";
 import { FeedbackControl } from "@/components/review/feedback";
 import { ScoreMeter } from "@/components/review/score-meter";
 import { PageTabs } from "@/components/review/page-by-page-tabs";
-import { PACKAGE_NAME, type Initiative } from "@/content/review";
+import { type Initiative } from "@/content/review";
 import { cn } from "@/lib/utils";
 
 const SCORE_LABELS = [
@@ -41,31 +42,42 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
         {initiative.scores && <Scores scores={initiative.scores} className="mt-6 max-w-sm" />}
       </header>
 
-      {initiative.proposal && (
-        <blockquote className="bz-quote max-w-3xl leading-relaxed">
-          <span className="bz-eyebrow mb-1 block">From the proposal</span>“{initiative.proposal}”
-        </blockquote>
-      )}
-      {hasOptionalParts(initiative) && (
-        <p className="bz-cell bz-cell--dashed flex flex-wrap items-center gap-3 p-4 text-sm leading-relaxed">
-          <OptionalBadge />
-          <span className="bz-muted">{`Anything marked like this goes beyond the agreed ${PACKAGE_NAME} package. We've included it for you to consider: approve it to keep it, or ask us to leave it out.`}</span>
-        </p>
+      {(initiative.proposal || initiative.wireframe) && (
+        <div className={cn("bz-cell grid", initiative.wireframe && "md:grid-cols-[1fr_minmax(0,22rem)]")}>
+          {initiative.proposal && (
+            <div className="p-5 md:p-6">
+              <h2 className="bz-eyebrow">From the proposal</h2>
+              <blockquote className="bz-quote mt-3 leading-relaxed">“{initiative.proposal}”</blockquote>
+            </div>
+          )}
+          {initiative.wireframe && (
+            <figure className="border-t border-[var(--hairline)] p-5 md:border-t-0 md:border-l md:p-6">
+              <LightboxImage
+                src={initiative.wireframe.src}
+                alt={initiative.wireframe.alt}
+                caption="Wireframe from the proposal"
+                thumbClassName="max-h-64 object-contain object-top"
+              />
+              <figcaption className="bz-muted mt-2 text-xs">Wireframe from the proposal</figcaption>
+            </figure>
+          )}
+        </div>
       )}
 
-      <div className="grid items-stretch gap-4 md:grid-cols-[1fr_1.4fr]">
-        <div className="bz-cell h-full p-5">
+      {/* One box: the problem on the left, what changed on the right, split by a hairline. */}
+      <div className="bz-cell grid md:grid-cols-[1fr_1.4fr]">
+        <div className="p-5 md:p-6">
           <h2 className="bz-eyebrow bz-warn">The problem</h2>
           <p className="mt-3 leading-relaxed">{initiative.problem}</p>
         </div>
-        <div className="bz-cell h-full p-5">
+        <div className="border-t border-[var(--hairline)] p-5 md:border-t-0 md:border-l md:p-6">
           <h2 className="bz-eyebrow">What changed</h2>
           <ul className="mt-3 space-y-3 leading-relaxed">
             {initiative.change.map((item) => {
               const text = typeof item === "string" ? item : item.text;
               return (
                 <li key={text} className="flex gap-3">
-                  <Tick className="mt-1 shrink-0" />
+                  <DuotoneTick className="mt-0.5 shrink-0" />
                   <span>
                     {text}
                     {typeof item !== "string" && <OptionalBadge className="ml-2 align-middle" />}
@@ -78,7 +90,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       </div>
 
       <section className="bz-guides bz-panel bz-panel--raised p-5 md:p-6">
-        <h2 className="bz-eyebrow mb-4">Page by page</h2>
+        <h2 className="bz-eyebrow mb-4">Where it changes</h2>
         <PageTabs initiativeId={initiative.id} pages={initiative.pages} />
       </section>
 
