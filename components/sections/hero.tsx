@@ -41,9 +41,11 @@ export function Hero({
               </Button>
             </div>
           </div>
-          <Feature id="social-proof">
-            <HeroReviewCard reviews={reviews} rating={rating} />
-          </Feature>
+          {reviews?.length !== 0 && (
+            <Feature id="social-proof">
+              <HeroReviewCard reviews={reviews} rating={rating} />
+            </Feature>
+          )}
         </div>
       </div>
     </div>

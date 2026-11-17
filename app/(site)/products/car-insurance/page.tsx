@@ -18,7 +18,8 @@ import {
   reducePremium,
   roadside,
 } from "@/content/car-insurance";
-import { carReviews, googleRating } from "@/content/google-reviews";
+import { googleRating } from "@/content/google-reviews";
+import { visibleTestimonials } from "@/lib/testimonial-store";
 import { carInsuranceFaqs } from "@/content/faqs";
 import {
   carPromo,
@@ -34,11 +35,13 @@ export const metadata: Metadata = {
     "Comprehensive Car Insurance in NZ, with fair pricing, no-surprises claims and local support. Get a quote online in around two minutes.",
 };
 
-export default function CarInsurancePage() {
+export default async function CarInsurancePage() {
+  // Testimonials unticked on /review/testimonials are left out straight away.
+  const reviews = await visibleTestimonials("car");
   return (
     <>
       <PromoStrip {...promoStrip} />
-      <Hero hero={carHero} reviews={carReviews} rating={googleRating} />
+      <Hero hero={carHero} reviews={reviews} rating={googleRating} />
       <PromoBanner promo={carPromo} />
       <IconCardGrid title={coverLevelsIntro.title} intro={coverLevelsIntro.body} cards={coverLevels} />
       <CoverComparison />
@@ -46,7 +49,7 @@ export default function CarInsurancePage() {
       <TwoColumnBlock {...roadside} />
       <IconCardGrid title="Why choose us" intro={whyChooseUsIntro} cards={whyChooseUs.slice(0, 3)} />
       <Feature id="google-reviews" before={<Testimonials testimonials={testimonials} />}>
-        <GoogleReviews reviews={carReviews} rating={googleRating} />
+        {reviews.length > 0 && <GoogleReviews reviews={reviews} rating={googleRating} />}
       </Feature>
       <FaqSection faqs={carInsuranceFaqs} />
       <ClosedPlans {...closedPlans} />

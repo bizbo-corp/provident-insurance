@@ -37,7 +37,7 @@ export type Initiative = {
   problem: string;
   /** A `{ text, optional }` item is an extra beyond what the proposal describes. */
   change: (string | { text: string; optional: true })[];
-  /** Questions or approvals we need from Provident. */
+  /** Questions or approvals needed from Provident. */
   asks?: string[];
   pages: InitiativePage[];
 };
@@ -49,7 +49,7 @@ export const PACKAGE_NAME = "Conversion core";
 export const PACKAGE_SUMMARY = {
   name: PACKAGE_NAME,
   scope: "Medium · Initiatives 1 to 5",
-  description: "Brand colour vs errors, social proof, button hierarchy, progress bar clarity and the car insurance benefits table.",
+  description: "Brand colour vs errors, social proof, button hierarchy, the quote header and progress bar, and the car insurance benefits table.",
   price: "$2,850 + GST",
 };
 
@@ -61,7 +61,7 @@ export const initiatives: Initiative[] = [
     short: "01",
     scores: { impact: 4.3, effort: 4.0 },
     title: "Car insurance benefits table",
-    wireframe: { src: "/review/wireframe-benefits-table.webp", alt: "Proposal mock-ups of the benefits table: the rebuilt version beside the live page" },
+    wireframe: { src: "/review/wireframe-benefits-table.webp", alt: "Proposal wireframe: a benefits comparison table with grouped rows, ticks and crosses per plan, and the comprehensive column highlighted" },
     proposal:
       "Make the page more scannable and easier to understand. Every tick sits in a single column down the right-hand side. Sections are chunked into meaningful categories, each with an icon. Structure only: no copy changes and no re-approval of wording.",
     problem:
@@ -106,7 +106,7 @@ export const initiatives: Initiative[] = [
       "Reviewers can browse the reviews section with arrows or by swiping, and long reviews open with Read more.",
     ],
     asks: [
-      "The rating and review count are a snapshot from 16 November 2026. We suggest refreshing them every three months.",
+      "The rating and review count are a snapshot from 16 November 2026. Refresh them every three months.",
       "Please approve the reviews chosen for each page and any tidied wording, on the Testimonials page.",
     ],
     pages: [
@@ -138,16 +138,17 @@ export const initiatives: Initiative[] = [
     ref: "Initiative 03",
     short: "03",
     scores: { impact: 3.6, effort: 3.0 },
-    title: "Progress bar clarity",
+    title: "Quote header and progress bar",
     wireframe: { src: "/review/wireframe-progress-bar.webp", alt: "Proposal wireframe: the unlabelled progress bar before, and labelled steps (Step 1 of 4: Car, Driver, Cover, Payment) after" },
     proposal:
       "Redesign the progress indicator so overall journey length and current position are explicit (labelled steps, step count or percentage).",
     problem:
       "The live quote shows an unlabelled red bar and a small step badge. People can't tell how many steps are left or what comes next, which is a common reason for leaving a form part way through.",
     change: [
-      "A header shows 'Step 1 of 4' and four labelled stages: Car, Driver, Cover and Payment.",
-      "The five screens are grouped into those four stages, so the journey feels shorter.",
-      "On phones the header shows the current step name next to the step count.",
+      "The header shows three labelled stages: Car, Driver and Cover Options. The quote is complete after Cover Options, so payment isn't a step.",
+      "Each stage is sized by its number of questions, so Car, the longest, takes the most room.",
+      "The bar fills as each question is answered.",
+      "On desktop, once the header scrolls away, a slim copy of the progress bar stays at the top.",
       "The header changes from black to Provident's light grey, to match the main website.",
       "The 'Your quote is ready to go' banner is removed, so there's less competing for attention.",
     ],
@@ -156,14 +157,14 @@ export const initiatives: Initiative[] = [
         id: "car-step",
         label: "Your car step",
         path: "/quote/car",
-        summary: "The first step: Step 1 of 4, with Car highlighted.",
+        summary: "The first step, with Car highlighted and filling as each question is answered.",
         shots: [{ id: "quote-header", caption: "Header and progress" }],
       },
       {
         id: "quote-step",
         label: "Quote step",
         path: "/quote/cover",
-        summary: "Part way through: Step 3 of 4, with Car and Driver complete, and no banner between the progress header and the quote.",
+        summary: "The last step, with Car and Driver complete, and no banner between the progress header and the quote.",
         shots: [{ id: "quote-cover-top", caption: "Header and progress" }],
       },
     ],
@@ -275,9 +276,6 @@ export const reviewNotes: Record<string, ReviewNote> = {
     original:
       "Thank you Provident Insurance! From the first call I felt well looked after. The staff are so friendly and explain everything clearly. It’s nice to deal with a NZ insurer that actually cares and picks up the phone responded fast and covered everything without hassle. Saved me a lot of money and stress. Would definitely recommend!",
     why: "The best single review for the home page. It covers every brand promise in one go: looked after from the first call, friendly people, clear explanations, a New Zealand insurer that picks up the phone, a hassle-free claim and money saved. Provident's own reply ties it to 'Driven by Care'.",
-    flags: [
-      "The name is shown as one word because Google shows it spaced out. We suggest 'Dhanuka W.' to match the other reviewers, if you're comfortable with that.",
-    ],
   },
   "Zarina M.": {
     googleName: "Zarina Mahomed",
@@ -290,13 +288,6 @@ export const reviewNotes: Record<string, ReviewNote> = {
     original:
       "10 out of 10 service team. Customer service was amazing and patient. Made it feel like I was talking to a friend who understood my situation.",
     why: "Short, warm and human. 'Talking to a friend who understood my situation' is the emotional side of the care message, and it reads in a few seconds.",
-  },
-  "Caryl P.": {
-    googleName: "Caryl Rosette Pasion",
-    original:
-      "Very smooth transaction! No stress at all. Highly recommended. I just called them, they lodged it and they did everything after that. I just brought my car to the shop and took it when the job is done. No sweat.",
-    why: "Plain-language proof that claiming is easy: one call and Provident does the rest. It answers 'how simple is it?' on the home page.",
-    flags: ["The last sentence was reworded for grammar more than the others. Please check you're comfortable with it, or we'll restore the original."],
   },
   "Liz K.": {
     googleName: "Liz Kerapa",
@@ -386,22 +377,6 @@ export const reviewNotes: Record<string, ReviewNote> = {
     why: "Names a real staff member, which makes 'real people answer the phone' believable.",
     flags: ["Please confirm Antonio is still on the team before this goes live."],
   },
-  "Debbie E.": {
-    googleName: "Debbie Eaton",
-    original:
-      "I am totally impressed with Provident's mechanical warranty and customer service. They have delivered exactly what I believed I had paid for when I purchased my warranty. My recent experience could not have been less stress free. I informed my mechanic I have a Provident mechanical warranty and paid my excess. The mechanic and Provident did the rest. Straight forward and trustworthy. Thank you.",
-    why: "'Delivered exactly what I believed I had paid for' answers the biggest fear about any insurer: will they actually pay?",
-    flags: [
-      "Debbie wrote 'could not have been less stress free', which literally means the opposite of what she meant. The site shows 'more stress-free'. Please approve this change, or we'll show her original words.",
-    ],
-  },
-  "Keiti H.": {
-    googleName: "Keiti Hughes",
-    original:
-      "I'd share my experience with family and friends. Darren and the team, made me feel like a person, explained proceedings easy to understand!. Well done Provident keep up the good work.",
-    why: "'Made me feel like a person' is the looked-after angle for the claims page, where people arrive stressed.",
-    flags: ["Please confirm Darren is still on the team."],
-  },
   "Brenden F.": {
     googleName: "brenden fouse",
     original:
@@ -422,21 +397,22 @@ export const reviewOrder: Record<string, string> = {
 export const reviewCarSharedNote =
   "Also used on the home page. Here it rounds out the carousel with general service proof.";
 
-/** Reviews considered and deliberately left out. */
-export const reviewsLeftOut = [
-  { who: "Lucky cat Y and Lucia Sola", why: "Excellent but very long. They would need trimming, which counts as editing." },
-  { who: "Sussan Goldie", why: "Says Provident paid for everything, fluids included. Another recent reviewer says some parts weren't covered, so featuring it could imply cover that isn't guaranteed." },
-  { who: "Reviews naming a dealer or garage", why: "They promote or criticise third parties (for example Enterprise Motor Group, Kawan Collision, Rototuna Service Centre, Archibald Motors)." },
-  { who: "Reviews with mixed points", why: "Carly, Colleen Jones and Custom Property Renovations raise complaints about the excess." },
-  { who: "Reviews that misspell the brand", why: "Lisa Slaughter ('Prividents') and Bianca Johns ('Providence')." },
-  { who: "Payment protection reviews about illness", why: "Several name serious illnesses. We've left these out to protect the reviewers' health information." },
+/**
+ * Reading order for Back and Next: the initiatives, with the testimonials
+ * straight after Social proof (they belong to it), then Provident feedback.
+ */
+export const REVIEW_SEQUENCE: { href: string; label: string }[] = [
+  ...initiatives.flatMap((initiative) => {
+    const step = { href: `/review/${initiative.id}`, label: `${initiative.short} ${initiative.title}` };
+    return initiative.id === "social-proof" ? [step, { href: "/review/testimonials", label: "Testimonial review" }] : [step];
+  }),
+  { href: "/review/feedback", label: "Provident feedback" },
 ];
 
-/** Waiting on Provident. Glendyr's review isn't on the site yet. */
-export const pendingReview = {
-  who: "Glendyr Andrews (CreditCare)",
-  original:
-    "So very stressful time for us, as for medical reasons I had to stop working. We were able to pay all our bills but the care Darren & Shaun went out of their way to help guide us through this difficult times. I would like them to be recognised for their outstanding care, support & understanding. My motto:- Together Everyone Achieves More. Your team is amazing. Thanks for the help we were given",
-  why: "Shows CreditCare doing its job at a hard time, and names two staff members for their care.",
-  ask: "It mentions a health situation, so we'd like Provident to ask Glendyr's permission before we feature it on the CreditCare page.",
-};
+export function neighbours(href: string) {
+  const index = REVIEW_SEQUENCE.findIndex((step) => step.href === href);
+  return {
+    previous: index > 0 ? REVIEW_SEQUENCE[index - 1] : { href: "/review", label: "the overview" },
+    next: index >= 0 ? REVIEW_SEQUENCE[index + 1] : undefined,
+  };
+}

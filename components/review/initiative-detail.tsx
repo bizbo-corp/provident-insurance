@@ -33,42 +33,40 @@ export const hasOptionalParts = (initiative: Initiative) =>
 export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   return (
     <article className="space-y-8">
-      <header>
-        <p className="bz-eyebrow">{initiative.ref}</p>
-        <h1 className="bz-h2 mt-3">{initiative.title}</h1>
-        <p className="bz-muted mt-3 text-sm">
-          Appears on: {initiative.pages.map((page) => page.label).join(", ")}
-        </p>
-        {initiative.scores && <Scores scores={initiative.scores} className="mt-6 max-w-sm" />}
-      </header>
-
-      {(initiative.proposal || initiative.wireframe) && (
-        <div className={cn("bz-cell grid", initiative.wireframe && "md:grid-cols-[1fr_minmax(0,22rem)]")}>
+      {/* Title, scores and the proposal's words on the left; the proposal's wireframe on the right. */}
+      <header className={cn("grid items-start gap-8", initiative.wireframe && "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]")}>
+        <div className="min-w-0">
+          <p className="bz-eyebrow">{initiative.ref}</p>
+          <h1 className="bz-h2 mt-3">{initiative.title}</h1>
+          <p className="bz-muted mt-3 text-sm">
+            Appears on: {initiative.pages.map((page) => page.label).join(", ")}
+          </p>
+          {initiative.scores && <Scores scores={initiative.scores} className="mt-6 max-w-sm" />}
           {initiative.proposal && (
-            <div className="p-5 md:p-6">
+            <div className="mt-8">
               <h2 className="bz-eyebrow">From the proposal</h2>
               <blockquote className="bz-quote mt-3 leading-relaxed">“{initiative.proposal}”</blockquote>
             </div>
           )}
-          {initiative.wireframe && (
-            <figure className="border-t border-[var(--hairline)] p-5 md:border-t-0 md:border-l md:p-6">
-              <LightboxImage
-                src={initiative.wireframe.src}
-                alt={initiative.wireframe.alt}
-                caption="Wireframe from the proposal"
-                thumbClassName="max-h-64 object-contain object-top"
-              />
-              <figcaption className="bz-muted mt-2 text-xs">Wireframe from the proposal</figcaption>
-            </figure>
-          )}
         </div>
-      )}
+        {initiative.wireframe && (
+          <figure className="min-w-0">
+            <LightboxImage
+              src={initiative.wireframe.src}
+              alt={initiative.wireframe.alt}
+              caption="Wireframe from the proposal"
+              thumbClassName="max-h-[30rem] object-contain object-top"
+            />
+            <figcaption className="bz-muted mt-2 text-xs">Wireframe from the proposal</figcaption>
+          </figure>
+        )}
+      </header>
 
       {/* One box: the problem on the left, what changed on the right, split by a hairline. */}
       <div className="bz-cell grid md:grid-cols-[1fr_1.4fr]">
         <div className="p-5 md:p-6">
           <h2 className="bz-eyebrow bz-warn">The problem</h2>
-          <p className="mt-3 leading-relaxed">{initiative.problem}</p>
+          <p className="mt-3 text-lg leading-relaxed">{initiative.problem}</p>
         </div>
         <div className="border-t border-[var(--hairline)] p-5 md:border-t-0 md:border-l md:p-6">
           <h2 className="bz-eyebrow">What changed</h2>

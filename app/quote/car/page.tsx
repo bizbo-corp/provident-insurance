@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useReportAnswers } from "@/lib/quote-progress";
 import {
   ChoiceGroup,
   HelpLink,
@@ -92,6 +93,7 @@ export default function QuoteCarPage() {
     parking !== null,
   ];
 
+  useReportAnswers("car", answers.filter(Boolean).length);
   // One question at a time: everything up to and including the first unanswered.
   const firstUnanswered = answers.indexOf(false);
   const allDone = firstUnanswered === -1;

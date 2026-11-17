@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FeedbackControl, FeedbackSummary } from "@/components/review/feedback";
+import { StepNav } from "@/components/review/step-nav";
 
 export const metadata: Metadata = { title: "Provident feedback | Provident version 2 review" };
 
@@ -14,6 +15,9 @@ export default function FeedbackPage() {
               </p>
               <FeedbackControl id="general" label="General comments" />
               <FeedbackSummary />
+              <div className="pt-5">
+                <StepNav href="/review/feedback" />
+              </div>
             </section>
   );
 }

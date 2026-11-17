@@ -54,6 +54,41 @@ function scrollToReviews(reducedMotion: boolean) {
   requestAnimationFrame(step);
 }
 
+/** Stars and the quote, clamped to three lines. Shared with the review site's preview. */
+export function HeroReviewQuote({ review }: { review: GoogleReview }) {
+  return (
+    <>
+      <Stars score={5} className="text-base" />
+      <blockquote className="mt-2 line-clamp-3 text-base leading-relaxed text-dark-grey">
+        “{review.quote}”
+      </blockquote>
+    </>
+  );
+}
+
+/** Reviewer, when it was posted, and the link out to Google. Shared with the review site's preview. */
+export function HeroReviewFooter({ review }: { review: GoogleReview }) {
+  return (
+    <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs">
+      <p>
+        <span className="font-bold text-dark-grey">{review.author}</span>
+        <span className="text-dark-grey/70"> · {review.posted}</span>
+      </p>
+      <a
+        href={review.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative z-10 inline-flex items-center gap-1 font-bold text-dark-grey no-underline hover:underline hover:opacity-100"
+      >
+        <GoogleMark className="size-3.5" />
+        Read on Google
+        <ExternalLink className="size-3" aria-hidden="true" />
+        <span className="sr-only">(review by {review.author}, opens in a new tab)</span>
+      </a>
+    </figcaption>
+  );
+}
+
 export function HeroReviewCard({
   reviews = homeReviews,
   rating = googleRating,
@@ -135,10 +170,7 @@ export function HeroReviewCard({
                   className="relative min-w-0 flex-[0_0_100%] pr-1"
                   inert={index !== selected}
                 >
-                  <Stars score={5} className="text-base" />
-                  <blockquote className="mt-2 line-clamp-3 text-base leading-relaxed text-dark-grey">
-                    “{review.quote}”
-                  </blockquote>
+                  <HeroReviewQuote review={review} />
                   {/* The whole card opens the full review further down; only "Read on Google" leaves the site. */}
                   {linksDown && (
                     <a
@@ -156,30 +188,7 @@ export function HeroReviewCard({
                       </span>
                     </a>
                   )}
-                  <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs">
-                    <p>
-                      <span className="font-bold text-dark-grey">
-                        {review.author}
-                      </span>
-                      <span className="text-dark-grey/70">
-                        {" "}
-                        · {review.posted}
-                      </span>
-                    </p>
-                    <a
-                      href={review.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative z-10 inline-flex items-center gap-1 font-bold text-dark-grey no-underline hover:underline hover:opacity-100"
-                    >
-                      <GoogleMark className="size-3.5" />
-                      Read on Google
-                      <ExternalLink className="size-3" aria-hidden="true" />
-                      <span className="sr-only">
-                        (review by {review.author}, opens in a new tab)
-                      </span>
-                    </a>
-                  </figcaption>
+                  <HeroReviewFooter review={review} />
                 </figure>
               ))}
             </div>

@@ -64,7 +64,7 @@ export function PageTabs({ initiativeId, pages }: { initiativeId: string; pages:
             <a href={`${page.path}?v=before`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--ghost bz-btn--sm">
               Open before <span className="bz-arrow" aria-hidden="true">↗</span>
             </a>
-            <a href={`${page.path}?v=after`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--ghost bz-btn--sm">
+            <a href={`${page.path}?v=after`} target="_blank" rel="noopener noreferrer" className="bz-btn bz-btn--primary bz-btn--sm">
               Open after <span className="bz-arrow" aria-hidden="true">↗</span>
             </a>
           </div>

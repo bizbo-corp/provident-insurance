@@ -1,16 +1,29 @@
 /**
  * The quote steps, in live order. Names and "next" labels come from the live
- * app, and `progress` is how full its bar is on that step.
+ * app, and `progress` is how full the live (before) bar is on that step.
  */
-/** The simpler four-part journey shown by the "after" progress steps. */
-export const QUOTE_GROUPS = ["Car", "Driver", "Cover", "Payment"] as const;
+/**
+ * The "after" progress: three stages, sized by how many questions each asks,
+ * so Car (the longest) takes the most room. The quote is complete after Cover,
+ * so contact details and payment aren't a stage.
+ */
+export const QUOTE_GROUPS = [
+  { label: "Car", questions: 8 },
+  { label: "Driver", questions: 7 },
+  { label: "Cover Options", questions: 4 },
+] as const;
 
+/**
+ * `group` is the stage (3 means past the quote), `offset` the questions in that
+ * stage on earlier screens, and `questions` how many this screen asks.
+ * The cover choices start filled in, so that stage is complete on arrival.
+ */
 export const QUOTE_STEPS = [
-  { slug: "car", title: "Your Car", icon: "car", group: 0, groupFill: 1, progress: 15, nextLabel: "Next: Insured Type" },
-  { slug: "insured-type", title: "Insured Type", icon: "person", group: 1, groupFill: 0.5, progress: 29, nextLabel: "Next: Driver Details" },
-  { slug: "details", title: "The Driver", icon: "person", group: 1, groupFill: 1, progress: 43, nextLabel: "Next: The Price" },
-  { slug: "cover", title: "Quote", icon: "cart", group: 2, groupFill: 1, progress: 58, nextLabel: "" },
-  { slug: "contact", title: "Contact Details", icon: "person", group: 3, groupFill: 0.33, progress: 72, nextLabel: "" },
+  { slug: "car", title: "Your Car", icon: "car", group: 0, offset: 0, questions: 8, progress: 15, nextLabel: "Next: Insured Type" },
+  { slug: "insured-type", title: "Insured Type", icon: "person", group: 1, offset: 0, questions: 1, progress: 29, nextLabel: "Next: Driver Details" },
+  { slug: "details", title: "The Driver", icon: "person", group: 1, offset: 1, questions: 6, progress: 43, nextLabel: "Next: The Price" },
+  { slug: "cover", title: "Quote", icon: "cart", group: 2, offset: 0, questions: 4, progress: 58, nextLabel: "" },
+  { slug: "contact", title: "Contact Details", icon: "person", group: 3, offset: 0, questions: 0, progress: 72, nextLabel: "" },
 ] as const;
 
 export type QuoteStep = (typeof QUOTE_STEPS)[number];

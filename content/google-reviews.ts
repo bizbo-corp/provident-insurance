@@ -39,13 +39,6 @@ const reviews = {
     posted: "5 months ago",
     url: reviewUrl("Ci9DQUlRQUNvZENodHljRjlvT25KS2VVNTRjVWhYTlZGQlRFMXNUM0phVFZaS1MyYxAB"),
   },
-  caryl: {
-    quote:
-      "Very smooth transaction! No stress at all. Highly recommended. I just called them, they lodged it and they did everything after that. I just took my car to the shop and picked it up when the job was done. No sweat.",
-    author: "Caryl P.",
-    posted: "4 months ago",
-    url: reviewUrl("Ci9DQUlRQUNvZENodHljRjlvT25ab1FVd3RlbEZqVG1SbWNrc3hORlpGTm1GaGVWRRAB"),
-  },
   liz: {
     quote:
       "Fast, friendly and efficient support on my claim. Follow-up with my mechanic and Provident Insurance was seamless and stress-free for all of us involved. Thanks Provident!",
@@ -143,20 +136,6 @@ const reviews = {
     posted: "3 months ago",
     url: reviewUrl("Ci9DQUlRQUNvZENodHljRjlvT21GV1dqZEpXWGRUTUcxS1EyWklSVWxFU1dwd2JuYxAB"),
   },
-  debbie: {
-    quote:
-      "I am totally impressed with Provident’s mechanical warranty and customer service. They have delivered exactly what I believed I had paid for when I purchased my warranty. My recent experience could not have been more stress-free. I informed my mechanic I have a Provident mechanical warranty and paid my excess. The mechanic and Provident did the rest. Straightforward and trustworthy. Thank you.",
-    author: "Debbie E.",
-    posted: "a year ago",
-    url: reviewUrl("ChZDSUhNMG9nS0VJQ0FnSURmaWUzYmVREAE"),
-  },
-  keiti: {
-    quote:
-      "I’d share my experience with family and friends. Darren and the team made me feel like a person and explained proceedings so they were easy to understand! Well done Provident, keep up the good work.",
-    author: "Keiti H.",
-    posted: "7 months ago",
-    url: reviewUrl("Ci9DQUlRQUNvZENodHljRjlvT2t3MGVtbHZPV05QVTJ0eFdGVkJVV3QxYm1RMVRtYxAB"),
-  },
   brenden: {
     quote:
       "I’ve been using Provident for the last seven years, both for mechanical cover on my own vehicle and through my business. Their professionalism and genuine care set them apart. The team goes beyond just looking out for you as a business. They truly support you on a personal level as well. Their service has always been outstanding, and I highly recommend Provident to anyone looking for reliable and customer-focused protection!",
@@ -170,7 +149,6 @@ const reviews = {
 export const homeReviews: GoogleReview[] = [
   reviews.dhanuka,
   reviews.zarina,
-  reviews.caryl,
   reviews.maringi,
   reviews.liz,
   reviews.connor,
@@ -200,8 +178,6 @@ export const mechanicalReviews: GoogleReview[] = [
 export const claimsReviews: GoogleReview[] = [
   reviews.vanessa,
   reviews.yasmin,
-  reviews.debbie,
-  reviews.keiti,
   reviews.liz,
 ];
 

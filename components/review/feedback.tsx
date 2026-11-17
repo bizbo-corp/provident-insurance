@@ -259,7 +259,7 @@ export function ReviewerBar() {
           {editing ? "Change your name" : "Welcome. Who's reviewing?"}
         </h2>
         <p className="bz-muted mt-3 text-sm">
-          Your name is saved with your approvals and comments, so we know who said what.
+          Your name is saved with your approvals and comments, so each comment shows who made it.
         </p>
         <NameForm initial={editing ? reviewer : ""} onDone={() => setEditing(false)} />
         {editing && (
@@ -274,26 +274,23 @@ export function ReviewerBar() {
 
 /** "Reviewing as X", with where the feedback is saved and a way to change the name. Sits with the feedback controls. */
 export function ReviewerLine({ className }: { className?: string }) {
-  const { reviewer, ready, remote, saveState } = useFeedback();
+  const { reviewer, ready, saveState } = useFeedback();
   if (!ready || !reviewer) return null;
 
-  const status =
-    remote === "checking"
-      ? "Loading your feedback…"
-      : remote === "off"
-        ? "Saved in this browser only."
-        : saveState === "saving"
-          ? "Saving…"
-          : saveState === "error"
-            ? "Couldn't save just now. Please try again."
-            : "Your feedback is saved and shared with Bizbo.";
-
+  // The name doubles as the way to change it, so the line stays just "Reviewing as <name>".
   return (
-    <p className={cn("bz-muted text-sm", className)} aria-live="polite">
-      Reviewing as <strong className="text-[var(--root)]">{reviewer}</strong>. {status}{" "}
-      <button type="button" className="underline underline-offset-4" onClick={() => window.dispatchEvent(new Event(CHANGE_NAME_EVENT))}>
-        Not you?
+    <p className={cn("bz-muted text-xs", className)} aria-live="polite">
+      Reviewing as{" "}
+      <button
+        type="button"
+        title="Change name"
+        className="relative font-semibold text-[var(--root)] hover:underline hover:underline-offset-4"
+        onClick={() => window.dispatchEvent(new Event(CHANGE_NAME_EVENT))}
+      >
+        {reviewer}
+        <span className="sr-only"> (change name)</span>
       </button>
+      {saveState === "error" && <span className="bz-warn"> Couldn&apos;t save. Please try again.</span>}
     </p>
   );
 }
@@ -331,10 +328,7 @@ export function FeedbackControl({
   return (
     <div className={embedded ? "bz-rule-top mt-4 pt-4" : "bz-cell p-5"}>
       {!embedded && (
-        <div className="mb-4">
-          <p className="bz-eyebrow">Provident feedback</p>
-          <ReviewerLine className="mt-2" />
-        </div>
+        <p className="bz-eyebrow mb-4">Provident feedback</p>
       )}
 
       <div className="flex flex-wrap items-center gap-3">
@@ -362,7 +356,10 @@ export function FeedbackControl({
       </div>
 
       <div className={embedded ? "mt-4" : "bz-rule-top mt-5 pt-5"}>
-        <p className="text-sm font-semibold">Comments</p>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <p className="text-sm font-semibold">Comments</p>
+          <ReviewerLine />
+        </div>
         {comments.length > 0 && (
           <ul className="mt-3 space-y-3">
             {comments.map((comment) => (
@@ -462,7 +459,7 @@ export function FeedbackSummary() {
       <p className="bz-muted text-xs">
         {remote === "on"
           ? "Your feedback is already saved and shared with Bizbo, so there's no need to email it. Copy it if you'd like your own record."
-          : "Your feedback is saved in this browser only, so you can come back to it. Copy it into an email to send it to us."}
+          : "Your feedback is saved in this browser only, so you can come back to it. Copy it into an email to send it to Bizbo."}
       </p>
     </div>
   );

@@ -77,7 +77,8 @@ function RatingSummary({ rating }: { rating: GoogleRating }) {
   );
 }
 
-function ReviewCard({
+/** One review in the section carousel. Also used by the review site's preview. */
+export function ReviewCard({
   review,
   position,
   total,

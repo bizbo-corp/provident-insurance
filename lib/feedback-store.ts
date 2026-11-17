@@ -44,7 +44,7 @@ export function reviewerKey(name: string) {
   return name.trim().toLowerCase().replace(/\s+/g, " ").slice(0, 60);
 }
 
-async function redis<T>(...command: (string | number)[]): Promise<T> {
+export async function redis<T>(...command: (string | number)[]): Promise<T> {
   if (!url || !token) throw new Error("Feedback store is not configured");
   const response = await fetch(url, {
     method: "POST",

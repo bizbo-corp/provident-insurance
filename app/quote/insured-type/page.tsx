@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useReportAnswers } from "@/lib/quote-progress";
 import {
   ChoiceGroup,
   HelpLink,
@@ -19,6 +20,7 @@ export default function QuoteInsuredTypePage() {
   const router = useRouter();
   const [insured, setInsured] = useState<(typeof OPTIONS)[number]["value"] | null>(null);
 
+  useReportAnswers("insured-type", insured === null ? 0 : 1);
   return (
     <div className="mt-[26px]">
       <Question

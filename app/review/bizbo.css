@@ -58,6 +58,12 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Behind the review frame (overscroll, short pages) show Fig, never the site's white. */
+html:has([data-brand="bizbo"]),
+body:has([data-brand="bizbo"]) {
+  background: #343b2c;
+}
+
 /* Undo the Provident base layer inside the review. */
 :where([data-brand="bizbo"]) :where(h1, h2, h3, h4) {
   font-size: inherit;
@@ -192,10 +198,12 @@
   color: var(--earth-deep);
 }
 .bz-subnav a:hover,
-.bz-subnav a[aria-current="true"] {
+.bz-subnav a[aria-current="true"],
+.bz-subnav a[aria-current="page"] {
   color: var(--root);
 }
-.bz-subnav a[aria-current="true"] {
+.bz-subnav a[aria-current="true"],
+.bz-subnav a[aria-current="page"] {
   font-weight: 600;
 }
 
@@ -720,4 +728,76 @@ svg.linework.bz-stepart-devices {
 /* The contents sidebar, pinned to the left edge of the screen. */
 .bz-sidebar {
   background: color-mix(in srgb, var(--zen) 55%, transparent);
+}
+
+/* Testimonial picks: ticked cards look active, unticked ones step back. */
+.bz-pick {
+  transition: border-color 160ms var(--bz-ease), box-shadow 160ms var(--bz-ease);
+}
+.bz-pick[data-shown="true"] {
+  border-color: var(--lichen);
+  box-shadow: inset 4px 0 0 var(--lichen);
+}
+.bz-pick[data-shown="false"] .bz-pick__body {
+  opacity: 0.5;
+}
+/* Live preview of a testimonial in Provident's own card. Hidden ones go grey and say so. */
+.bz-preview {
+  /* Provident's ink, so the site's links (which inherit colour in here) read as on the site. */
+  color: var(--color-dark-grey);
+  border: 1px solid var(--hairline);
+  transition: filter 160ms var(--bz-ease);
+}
+.bz-preview__hidden {
+  display: none;
+}
+.bz-pick[data-shown="false"] .bz-preview {
+  filter: grayscale(1);
+}
+.bz-pick[data-shown="false"] .bz-preview__hidden {
+  display: inline-block;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--zen);
+  color: var(--root);
+  font-family: var(--bz-mono);
+  font-size: 12px;
+}
+.bz-pick__toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.bz-pick__toggle--off {
+  cursor: default;
+}
+.bz-check {
+  appearance: none;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 5px;
+  background: transparent center / 14px no-repeat;
+  cursor: inherit;
+  transition: background-color 120ms var(--bz-ease), border-color 120ms var(--bz-ease);
+}
+.bz-check:checked {
+  border-color: var(--lichen);
+  background-color: var(--lichen);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3L13 4.5' fill='none' stroke='%23293021' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.bz-check:focus-visible {
+  outline: 2px solid var(--lichen);
+  outline-offset: 2px;
+}
+.bz-check:disabled {
+  opacity: 0.5;
 }

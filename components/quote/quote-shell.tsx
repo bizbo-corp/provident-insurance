@@ -2,6 +2,7 @@
 
 import { Car, ShoppingCart, User } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { QuoteStepper } from "@/components/quote/quote-stepper";
 import { useFeature } from "@/components/variants/variant-provider";
@@ -16,10 +17,19 @@ export function QuoteShell({ children }: { children: React.ReactNode }) {
   const Icon = STEP_ICONS[step.icon];
   const labelledSteps = useFeature("progress-steps");
   const neutral = useFeature("neutral-panels");
+  const headerRef = useRef<HTMLElement>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const observer = new IntersectionObserver(([entry]) => setStuck(!entry.isIntersecting));
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, [labelledSteps]);
   return (
     <div data-surface="quote" className="min-h-screen bg-white text-quote-ink">
       {labelledSteps ? (
-        <header className="bg-light-grey pt-5 pb-4">
+        <header ref={headerRef} className="bg-light-grey pt-5 pb-4">
           <div className="mx-auto w-full max-w-[784px] px-4 sm:px-6">
             {/* Same logo as the marketing site header. The SVG has padding, so it sits slightly into the header's spacing. */}
             <Image
@@ -33,7 +43,22 @@ export function QuoteShell({ children }: { children: React.ReactNode }) {
             <QuoteStepper step={step} />
           </div>
         </header>
-      ) : (
+      ) : null}
+      {labelledSteps && (
+        // Desktop only: once the header scrolls away, a slim copy of the bar stays at the top.
+        <div
+          aria-hidden="true"
+          className={cn(
+            "fixed inset-x-0 top-0 z-30 hidden bg-light-grey py-3 shadow-[0_1px_0_rgba(0,0,0,0.08)] transition-transform duration-200 motion-reduce:transition-none lg:block",
+            stuck ? "translate-y-0" : "pointer-events-none -translate-y-full"
+          )}
+        >
+          <div className="mx-auto w-full max-w-[784px] px-4 sm:px-6">
+            <QuoteStepper step={step} compact />
+          </div>
+        </div>
+      )}
+      {!labelledSteps && (
         <header className="flex h-[76px] items-center justify-center bg-quote-ink">
           <Image src="/images/quote-header-logo.svg" alt="Provident Insurance" width={278} height={32} priority />
         </header>

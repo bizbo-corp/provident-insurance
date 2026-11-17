@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useReportAnswers } from "@/lib/quote-progress";
 import { useRouter } from "next/navigation";
 import {
   ChoiceGroup,
@@ -135,6 +136,7 @@ export default function QuoteDriverPage() {
     isDateComplete(policyStart),
   ];
 
+  useReportAnswers("details", answers.filter(Boolean).length);
   const firstUnanswered = answers.findIndex((done) => !done);
   const allDone = firstUnanswered === -1;
 

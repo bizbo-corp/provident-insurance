@@ -1,44 +1,44 @@
 import type { Metadata } from "next";
-import { FeedbackControl, ReviewerLine } from "@/components/review/feedback";
+import { FeedbackControl } from "@/components/review/feedback";
+import { StepNav } from "@/components/review/step-nav";
 import { cn } from "@/lib/utils";
 import { hasEdits, WordDiff } from "@/components/review/word-diff";
+import { TestimonialPick } from "@/components/review/testimonial-pick";
+import { TestimonialPreview } from "@/components/review/testimonial-preview";
+import { SectionReviewPreview } from "@/components/review/section-review-preview";
+import { carHero } from "@/content/car-insurance";
+import { homeHero } from "@/content/home";
+import { googleRating, homeReviews } from "@/content/google-reviews";
+import { TESTIMONIAL_PAGES, testimonialId, type TestimonialPage } from "@/lib/testimonials";
 import {
-  aboutReviews,
-  carReviews,
-  claimsReviews,
-  googleRating,
-  homeReviews,
-  mechanicalReviews,
-} from "@/content/google-reviews";
-import {
-  pendingReview,
   REVIEW_DATE,
   reviewCarSharedNote,
   reviewNotes,
   reviewOrder,
-  reviewsLeftOut,
 } from "@/content/review";
 import type { GoogleReview } from "@/content/types";
 
-export const metadata: Metadata = { title: "Testimonials | Provident version 2 review" };
+export const metadata: Metadata = { title: "Testimonial review | Provident version 2 review" };
 
-const reviewSets: { id: string; title: string; status: string; reviews: GoogleReview[] }[] = [
-  { id: "home", title: "Home page", status: "Live in version 2", reviews: homeReviews },
-  { id: "car", title: "Car insurance", status: "Live in version 2", reviews: carReviews },
-  { id: "mechanical", title: "Mechanical breakdown insurance", status: "Ready for when this page is rebuilt", reviews: mechanicalReviews },
-  { id: "claims", title: "Claims", status: "Ready for when this page is rebuilt", reviews: claimsReviews },
-  { id: "about", title: "About / Why Provident", status: "Ready for when this page is rebuilt", reviews: aboutReviews },
+const reviewSets: { id: TestimonialPage; title: string; pageName: string; status: string; image: string; reviews: GoogleReview[] }[] = [
+  { id: "home", title: "Home page", pageName: "home page", status: "Live in version 2", image: homeHero.image, reviews: TESTIMONIAL_PAGES.home },
+  { id: "car", title: "Car insurance", pageName: "car insurance page", status: "Live in version 2", image: carHero.image, reviews: TESTIMONIAL_PAGES.car },
 ];
+
+/** Matches LONG_REVIEW_WORDS in the site's Google reviews section. */
+const LONG_WORDS = 60;
 
 const firstName = (name: string) => name.split(" ")[0].toLowerCase();
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: number; pageId: string }) {
+function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: number; pageId: TestimonialPage }) {
   const note = reviewNotes[review.author];
   const edited = note ? hasEdits(note.original, review.quote) : false;
+  const long = review.quote.trim().split(/\s+/).length > LONG_WORDS;
   const shared = pageId === "car" && homeReviews.includes(review);
+  const set = reviewSets.find((item) => item.id === pageId)!;
   return (
-    <li className="bz-cell p-5">
+    <TestimonialPick id={testimonialId(pageId, review)} page={set.pageName}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="font-semibold">
           <span className="bz-mono bz-muted mr-3 text-xs">{String(index + 1).padStart(2, "0")}</span>
@@ -52,10 +52,29 @@ function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: nu
           View on Google <span className="bz-arrow" aria-hidden="true">↗</span>
         </a>
       </div>
-      <blockquote className="bz-quote mt-3 leading-relaxed">“{review.quote}”</blockquote>
+      <div className="mt-4 grid gap-5 xl:grid-cols-2 xl:items-start">
+        <div>
+          <p className="bz-eyebrow">Hero card, under the headline: cut to three lines</p>
+          <p className="bz-muted mt-1 text-xs">The quote stops after three lines with an ellipsis.</p>
+          <div className="mt-2">
+            <TestimonialPreview review={review} index={index} total={set.reviews.length} image={set.image} />
+          </div>
+        </div>
+        <div>
+          <p className="bz-eyebrow">Reviews section, further down the page: full wording</p>
+          <p className="bz-muted mt-1 text-xs">
+            {long
+              ? `This review is over ${LONG_WORDS} words, so on the site it starts folded to five lines behind “Read more”. It is shown open here.`
+              : "Short enough to show in full on the site."}
+          </p>
+          <div className="mt-2">
+            <SectionReviewPreview review={review} index={index} total={set.reviews.length} />
+          </div>
+        </div>
+      </div>
       {note && (
         <p className="mt-3 text-sm leading-relaxed">
-          <span className="font-semibold">Why we chose it: </span>
+          <span className="font-semibold">Chosen because: </span>
           {shared ? reviewCarSharedNote : note.why}
         </p>
       )}
@@ -83,10 +102,10 @@ function ReviewItem({ review, index, pageId }: { review: GoogleReview; index: nu
       <FeedbackControl
         embedded
         id={`review-${pageId}-${slug(review.author)}`}
-        label={`Testimonial: ${review.author} (${reviewSets.find((set) => set.id === pageId)?.title ?? pageId})`}
+        label={`Testimonial: ${review.author} (${set.title})`}
         placeholder="Suggest a change to the wording, or add a comment"
       />
-    </li>
+    </TestimonialPick>
   );
 }
 
@@ -94,8 +113,8 @@ export default function TestimonialsPage() {
   return (
             <section className="space-y-10">
               <div>
-                <p className="bz-eyebrow">Review / Testimonials</p>
-                <h1 className="bz-h2 mt-3">Testimonials: which reviews, and why</h1>
+                <p className="bz-eyebrow">Review / Testimonial review</p>
+                <h1 className="bz-h2 mt-3">Testimonial review: which reviews, and why</h1>
                 <div className="bz-lede mt-4 max-w-3xl space-y-3">
                   <p>
                     All reviews are real Google reviews of Provident Insurance, captured on {REVIEW_DATE}, when Google showed{" "}
@@ -103,9 +122,9 @@ export default function TestimonialsPage() {
                     main worry of someone on that page.
                   </p>
                   <p>
-                    Names are shown as first name and initial. Where we tidied spelling or punctuation, you can compare the
+                    Names are shown as first name and initial. Where spelling or punctuation was tidied, you can compare the
                     reviewer&apos;s original words with what the site shows. Please approve each review or request changes, and
-                    suggest any wording you&apos;d prefer in its comments. We&apos;re happy to show any review exactly as written instead.
+                    suggest any wording you&apos;d prefer in its comments. Untick a review to hide it from the site straight away, and tick it to bring it back.
                   </p>
                 </div>
               </div>
@@ -114,8 +133,6 @@ export default function TestimonialsPage() {
                 These reviews feed the rating card under the hero and the Google reviews section further down each page, both
                 part of Initiative 02.
               </p>
-
-              <ReviewerLine />
 
               {reviewSets.map((set) => (
                 <div key={set.id} className="space-y-4">
@@ -135,30 +152,7 @@ export default function TestimonialsPage() {
                 </div>
               ))}
 
-              <div className="bz-cell bz-cell--warn space-y-3 p-5">
-                <p className="bz-eyebrow bz-warn">Waiting on permission</p>
-                <h2 className="bz-h3">{pendingReview.who}</h2>
-                <blockquote className="bz-quote leading-relaxed">“{pendingReview.original}”</blockquote>
-                <p className="text-sm"><span className="font-semibold">Why: </span>{pendingReview.why}</p>
-                <p className="text-sm font-semibold">{pendingReview.ask}</p>
-                <FeedbackControl embedded id="reviews-glendyr" label="Glendyr's review (permission)" placeholder="Suggest a change, or add a comment" />
-              </div>
-
-              <div className="space-y-3">
-                <h2 className="bz-h3">Reviews we left out on purpose</h2>
-                <ul className="bz-cell bz-divide text-sm">
-                  {reviewsLeftOut.map((item) => (
-                    <li key={item.who} className="p-4">
-                      <span className="font-semibold">{item.who}: </span>
-                      {item.why}
-                    </li>
-                  ))}
-                </ul>
-                <p className="bz-muted text-sm">
-                  We suggest refreshing the selection every three to six months, rotating out anything older than a year first,
-                  and keeping a mix that fairly reflects the overall rating, as the Commerce Commission expects of testimonials.
-                </p>
-              </div>
+              <StepNav href="/review/testimonials" />
             </section>
   );
 }
