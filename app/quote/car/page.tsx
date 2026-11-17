@@ -12,6 +12,7 @@ import {
   QuoteField,
   QuoteStepActions,
 } from "@/components/quote/quote-question";
+import { useFeature } from "@/components/variants/variant-provider";
 import { nextQuoteStep, quoteStep, quoteStepHref } from "@/lib/quote-flow";
 
 type YesNo = "yes" | "no" | null;
@@ -61,6 +62,7 @@ function PlateDots() {
 
 export default function QuoteCarPage() {
   const router = useRouter();
+  const hierarchy = useFeature("button-hierarchy");
 
   const [rego, setRego] = useState("");
   const [vehicle, setVehicle] = useState<typeof SAMPLE_VEHICLE | null>(null);
@@ -138,7 +140,7 @@ export default function QuoteCarPage() {
             </QuoteButton>
           ) : (
             <QuoteButton
-              variant="outline"
+              variant={hierarchy ? "dark-wide" : "outline"}
               disabled={!REGO_PATTERN.test(rego)}
               onClick={() => setVehicle(SAMPLE_VEHICLE)}
             >
@@ -148,7 +150,7 @@ export default function QuoteCarPage() {
         </div>
 
         {vehicle && (
-          <div className="space-y-4" aria-live="polite">
+          <div className={hierarchy ? "space-y-4 rounded-lg bg-light-grey p-4" : "space-y-4"} aria-live="polite">
             <p className="text-lg font-bold">{vehicle.year}</p>
             <p><strong>Model:</strong> {vehicle.model}</p>
           </div>

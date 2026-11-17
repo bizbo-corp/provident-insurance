@@ -14,6 +14,11 @@ export type ProductCard = { href: string; image: string; title: string; body: st
 
 export type Testimonial = { quote: string; author: string; date: string };
 
+/** A real Google review. `posted` is the age Google showed when captured; `url` opens the review on Google. */
+export type GoogleReview = { quote: string; author: string; posted: string; url: string };
+
+export type GoogleRating = { score: number; count: number; url: string };
+
 export type CoverCell = { included: boolean; note?: string };
 
 export type CoverComparisonRow =

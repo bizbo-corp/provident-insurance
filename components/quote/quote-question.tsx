@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, Info, MinusCircle } from "lucide-react";
+import { useFeature } from "@/components/variants/variant-provider";
 import { cn } from "@/lib/utils";
 
 /** One question on the vertical timeline: status icon, connecting rule, content. */
@@ -52,10 +53,17 @@ export function QuestionNote({ children }: { children: React.ReactNode }) {
   return <p>{children}</p>;
 }
 
-/** Soft red info panel. Proposal item 1 targets this treatment, so it's kept as is here. */
-export function QuoteNotice({ children }: { children: React.ReactNode }) {
+/** Info panel. Soft red on live; the after state makes it neutral so it can't read as an error. */
+export function QuoteNotice({ title, children }: { title?: string; children: React.ReactNode }) {
+  const neutral = useFeature("neutral-panels");
   return (
-    <div className="space-y-4 rounded-lg bg-quote-notice p-4 text-sm text-quote-notice-ink">
+    <div
+      className={cn(
+        "space-y-4 rounded-lg p-4 text-sm",
+        neutral ? "border border-black/15 bg-white text-quote-ink" : "bg-quote-notice text-quote-notice-ink"
+      )}
+    >
+      {title && <p className={cn("font-bold", !neutral && "text-primary-dark")}>{title}</p>}
       {children}
     </div>
   );
@@ -87,7 +95,7 @@ export function ChoiceGroup<T extends string>({
   );
 }
 
-/** The full-width Next and Back pair at the foot of every step. */
+/** Next and Back at the foot of every step. */
 export function QuoteStepActions({
   nextLabel,
   onNext,
@@ -97,14 +105,25 @@ export function QuoteStepActions({
   onNext?: () => void;
   onBack?: () => void;
 }) {
-  return (
-    <div className="mt-8 space-y-4">
-      {nextLabel && onNext && (
-        <QuoteButton variant="next" onClick={onNext}>{nextLabel}</QuoteButton>
-      )}
-      {onBack && <QuoteButton variant="back" onClick={onBack}>Back</QuoteButton>}
-    </div>
+  const hierarchy = useFeature("button-hierarchy");
+  const next = nextLabel && onNext && (
+    <QuoteButton variant="next" className={cn(hierarchy && "h-auto min-h-10 w-auto flex-1 py-2 leading-tight")} onClick={onNext}>
+      {nextLabel}
+    </QuoteButton>
   );
+  const back = onBack && (
+    <QuoteButton variant={hierarchy ? "back-strong" : "back"} onClick={onBack}>Back</QuoteButton>
+  );
+
+  if (hierarchy) {
+    return (
+      <div className="sticky bottom-0 z-10 mt-8 flex gap-3 bg-white py-3">
+        {back}
+        {next}
+      </div>
+    );
+  }
+  return <div className="mt-8 space-y-4">{next}{back}</div>;
 }
 
 /** Shared text field: 56px tall, 8px corners. */
@@ -132,6 +151,8 @@ const BUTTON_VARIANTS = {
   select: "w-full border border-quote-accent text-quote-accent",
   selected: "w-full bg-quote-accent text-white",
   dark: "bg-quote-ink px-10 text-white",
+  "dark-wide": "w-[310px] max-w-full bg-quote-ink text-white disabled:bg-black/10",
+  "back-strong": "border border-quote-ink px-8 text-quote-ink",
 } as const;
 
 /** The live app's flat 40px button. `disabled` matches its washed-out state. */

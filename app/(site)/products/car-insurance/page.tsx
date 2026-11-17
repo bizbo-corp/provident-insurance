@@ -6,7 +6,9 @@ import { HelpStrip } from "@/components/sections/help-strip";
 import { Hero } from "@/components/sections/hero";
 import { IconCardGrid } from "@/components/sections/icon-card-grid";
 import { PromoBanner, PromoStrip } from "@/components/sections/promo-banner";
+import { GoogleReviews } from "@/components/sections/google-reviews";
 import { Testimonials } from "@/components/sections/testimonials";
+import { Feature } from "@/components/variants/variant-provider";
 import { TwoColumnBlock } from "@/components/sections/two-column-block";
 import {
   carHero,
@@ -16,6 +18,7 @@ import {
   reducePremium,
   roadside,
 } from "@/content/car-insurance";
+import { carReviews, googleRating } from "@/content/google-reviews";
 import { carInsuranceFaqs } from "@/content/faqs";
 import {
   carPromo,
@@ -35,14 +38,16 @@ export default function CarInsurancePage() {
   return (
     <>
       <PromoStrip {...promoStrip} />
-      <Hero hero={carHero} />
+      <Hero hero={carHero} reviews={carReviews} rating={googleRating} />
       <PromoBanner promo={carPromo} />
       <IconCardGrid title={coverLevelsIntro.title} intro={coverLevelsIntro.body} cards={coverLevels} />
       <CoverComparison />
       <IconCardGrid title={reducePremium.title} cards={reducePremium.cards} />
       <TwoColumnBlock {...roadside} />
       <IconCardGrid title="Why choose us" intro={whyChooseUsIntro} cards={whyChooseUs.slice(0, 3)} />
-      <Testimonials testimonials={testimonials} />
+      <Feature id="google-reviews" before={<Testimonials testimonials={testimonials} />}>
+        <GoogleReviews reviews={carReviews} rating={googleRating} />
+      </Feature>
       <FaqSection faqs={carInsuranceFaqs} />
       <ClosedPlans {...closedPlans} />
       <HelpStrip />

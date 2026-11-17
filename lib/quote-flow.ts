@@ -2,12 +2,15 @@
  * The quote steps, in live order. Names and "next" labels come from the live
  * app, and `progress` is how full its bar is on that step.
  */
+/** The simpler four-part journey shown by the "after" progress steps. */
+export const QUOTE_GROUPS = ["Car", "Driver", "Cover", "Payment"] as const;
+
 export const QUOTE_STEPS = [
-  { slug: "car", title: "Your Car", icon: "car", progress: 15, nextLabel: "Next: Insured Type" },
-  { slug: "insured-type", title: "Insured Type", icon: "person", progress: 29, nextLabel: "Next: Driver Details" },
-  { slug: "details", title: "The Driver", icon: "person", progress: 43, nextLabel: "Next: The Price" },
-  { slug: "cover", title: "Quote", icon: "cart", progress: 58, nextLabel: "" },
-  { slug: "contact", title: "Contact Details", icon: "person", progress: 72, nextLabel: "" },
+  { slug: "car", title: "Your Car", icon: "car", group: 0, groupFill: 1, progress: 15, nextLabel: "Next: Insured Type" },
+  { slug: "insured-type", title: "Insured Type", icon: "person", group: 1, groupFill: 0.5, progress: 29, nextLabel: "Next: Driver Details" },
+  { slug: "details", title: "The Driver", icon: "person", group: 1, groupFill: 1, progress: 43, nextLabel: "Next: The Price" },
+  { slug: "cover", title: "Quote", icon: "cart", group: 2, groupFill: 1, progress: 58, nextLabel: "" },
+  { slug: "contact", title: "Contact Details", icon: "person", group: 3, groupFill: 0.33, progress: 72, nextLabel: "" },
 ] as const;
 
 export type QuoteStep = (typeof QUOTE_STEPS)[number];

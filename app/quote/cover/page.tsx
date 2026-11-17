@@ -15,6 +15,7 @@ import {
   QuoteNotice,
   QuoteStepActions,
 } from "@/components/quote/quote-question";
+import { useFeature } from "@/components/variants/variant-provider";
 import {
   addOns,
   additionalExcess,
@@ -39,6 +40,7 @@ function QuoteSection({ title, children }: { title: string; children: React.Reac
 
 export default function QuoteCoverPage() {
   const router = useRouter();
+  const hierarchy = useFeature("button-hierarchy");
   const [tierId, setTierId] = useState<CoverTierId>("comprehensive");
   const [value, setValue] = useState(sampleQuote.value);
   const [excess, setExcess] = useState(excessOptions[0]);
@@ -84,7 +86,11 @@ export default function QuoteCoverPage() {
               onChange={(event) => setValue(event.target.value)}
               className={QUOTE_FIELD}
             />
-            <QuoteButton variant="back" disabled={value === sampleQuote.value} className="h-14 w-28 shrink-0 sm:w-44">
+            <QuoteButton
+              variant={hierarchy ? "dark" : "back"}
+              disabled={!hierarchy && value === sampleQuote.value}
+              className="h-14 w-28 shrink-0 px-0 sm:w-44"
+            >
               Update
             </QuoteButton>
           </div>
@@ -95,8 +101,7 @@ export default function QuoteCoverPage() {
         <div className="mt-4 space-y-4">
           <HelpLink />
           <ExcessPicker options={excessOptions} value={excess} onChange={setExcess} />
-          <QuoteNotice>
-            <p className="font-bold text-primary-dark">{additionalExcess.title}</p>
+          <QuoteNotice title={additionalExcess.title}>
             <p>{additionalExcess.intro}</p>
             <ul className="list-disc pl-6">
               {additionalExcess.items.map((item) => <li key={item}>{item}</li>)}

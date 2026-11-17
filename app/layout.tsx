@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { cookies, headers } from "next/headers";
+import { VariantProvider } from "@/components/variants/variant-provider";
+import { VariantToggle } from "@/components/variants/variant-toggle";
+import { parseVariant, VARIANT_COOKIE, VARIANT_HEADER } from "@/lib/variants";
 import "./globals.css";
 
 const ubuntu = localFont({
@@ -20,10 +24,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const value =
+    (await headers()).get(VARIANT_HEADER) ?? (await cookies()).get(VARIANT_COOKIE)?.value;
+
   return (
     <html lang="en" className={ubuntu.variable}>
-      <body>{children}</body>
+      <body>
+        <VariantProvider initial={parseVariant(value)}>
+          {children}
+          <VariantToggle />
+        </VariantProvider>
+      </body>
     </html>
   );
 }

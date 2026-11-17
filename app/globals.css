@@ -27,6 +27,11 @@
   --color-quote-track: #e8ebeb;
   --color-quote-success: #2a9d68;
   --color-quote-info: #3b7ddd;
+
+  /* Used only by "after" changes */
+  --color-rating: #fcaf17;
+  --color-cover-highlight: #d9f7e3;
+  --color-category-tint: #f8f6f1;
   --color-quote-selected: #dcdddf;
   --color-quote-notice: #fdf1ef;
   --color-quote-notice-ink: #5f2120;
@@ -123,13 +128,17 @@
 
 /*
  * The quote app is a separate product on live with its own theme, so it opts
- * out of the marketing type scale and uses a 16px root.
+ * out of the marketing type scale and uses a 16px root. The client review
+ * page (/review) isn't part of the site, so it does the same.
  */
 html:has([data-surface="quote"]),
-html:has([data-surface="quote"]) body {
+html:has([data-surface="quote"]) body,
+html:has([data-surface="review"]),
+html:has([data-surface="review"]) body {
   font-size: 16px;
   line-height: 1.5;
 }
+
 
 
 

@@ -1,0 +1,518 @@
+{
+  "$comment": "Maps the Provident Insurance Figma library to this repo. Code Connect needs a Figma Organization plan, so this manifest is the link instead. Keep node ids and keys stable: update components in place rather than recreating them.",
+  "figma": {
+    "fileKey": "XPjkbiazUJDWvh4LRYR7cC",
+    "url": "https://www.figma.com/design/XPjkbiazUJDWvh4LRYR7cC",
+    "pages": {
+      "Cover": "0:1",
+      "Foundations": "2:2",
+      "Icons": "2:3",
+      "Marketing components": "2:4",
+      "Quote components": "2:5"
+    },
+    "collections": {
+      "Color": {
+        "id": "VariableCollectionId:2:6",
+        "modes": [
+          "Value"
+        ]
+      },
+      "Size": {
+        "id": "VariableCollectionId:2:40",
+        "modes": {
+          "Mobile 16px root": "2:1",
+          "Desktop 18px root": "2:2"
+        }
+      }
+    }
+  },
+  "tokens": {
+    "source": "app/globals.css",
+    "rules": [
+      "Every --color-* in @theme inline (and the :root shadcn values it aliases) has a Figma variable in Color whose WEB code syntax is var(--color-<name>).",
+      "Marketing palette lives under marketing/, quote palette under quote/, 'after only' tokens under after/, shadcn aliases under semantic/ (aliasing a palette variable, never a raw value).",
+      "Tailwind black/N opacity utilities used in components are alpha/black-N.",
+      "rem-based sizes (spacing, radius-hero, font sizes) live in Size with 16px and 18px root modes. Fixed px tokens (radius-card) use the same value in both modes.",
+      "Shadows are effect styles: Shadow/md, Shadow/bar-down, Shadow/bar-up."
+    ],
+    "colorPrefixMap": {
+      "primary": "marketing/primary",
+      "primary-dark": "marketing/primary-dark",
+      "dark-grey": "marketing/dark-grey",
+      "light-grey": "marketing/light-grey",
+      "lighter-grey": "marketing/lighter-grey",
+      "quote-*": "quote/*",
+      "rating": "after/rating",
+      "cover-highlight": "after/cover-highlight",
+      "category-tint": "after/category-tint",
+      "background": "semantic/background",
+      "foreground": "semantic/foreground",
+      "primary-foreground": "semantic/primary-foreground",
+      "muted": "semantic/muted",
+      "muted-foreground": "semantic/muted-foreground",
+      "border": "semantic/border",
+      "input": "semantic/input",
+      "ring": "semantic/ring"
+    }
+  },
+  "components": [
+    {
+      "figma": "Button",
+      "nodeId": "5:38",
+      "key": "fcc0bbd756c9e6fbe3aa3fdac2507eadc830e21a",
+      "source": "components/ui/button.tsx",
+      "export": "Button",
+      "props": {
+        "Variant": {
+          "prop": "variant",
+          "map": {
+            "Primary": "primary",
+            "Outline": "outline",
+            "White": "white"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "map": {
+            "Default": "default",
+            "Wide": "wide",
+            "Small": "small"
+          }
+        },
+        "Label": "children",
+        "Breakpoint": "design-only (md: padding and root size)"
+      }
+    },
+    {
+      "figma": "Accordion item",
+      "nodeId": "6:12",
+      "key": "7e7c3f2e4cdb7b930bb1e3add51456f376950600",
+      "source": "components/ui/accordion.tsx",
+      "export": "AccordionItem",
+      "props": {
+        "State": "Radix data-state (closed/open)",
+        "Question": "AccordionTrigger children",
+        "Answer": "AccordionContent children"
+      }
+    },
+    {
+      "figma": "Product card",
+      "nodeId": "6:23",
+      "key": "aa7aa366f5f07962b6f41dd2d675148463d65f7f",
+      "source": "components/sections/product-cards.tsx",
+      "export": "ProductCards (one item)",
+      "props": {
+        "Title": "product.title",
+        "Body": "product.body",
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Icon card",
+      "nodeId": "6:24",
+      "key": "a9a66f604b3a33081d08dc2e3a710124c4d5ad48",
+      "source": "components/sections/icon-card-grid.tsx",
+      "export": "IconCardGrid (one card)",
+      "props": {
+        "Title": "card.title",
+        "Body": "card.body",
+        "Show body": "card.body defined",
+        "Icon": "card.icon"
+      }
+    },
+    {
+      "figma": "Hero panel",
+      "nodeId": "6:53",
+      "key": "67a26fcf2cbee802dc3e17583977e74fff93e59c",
+      "source": "components/sections/hero.tsx",
+      "export": "Hero",
+      "props": {
+        "Title": "hero.title",
+        "Subtitle": "hero.subtitle",
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Help strip",
+      "nodeId": "6:58",
+      "key": "c0456b39cd49e6c417fe36dbafdab03b344f2441",
+      "source": "components/sections/help-strip.tsx",
+      "export": "HelpStrip",
+      "props": {
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Promo strip",
+      "nodeId": "6:59",
+      "key": "86fc6188975a6955b4df7dc2127d6831af90a083",
+      "source": "components/sections/promo-banner.tsx",
+      "export": "PromoStrip",
+      "props": {
+        "Text": "text",
+        "Link label": "linkLabel"
+      }
+    },
+    {
+      "figma": "Site header",
+      "nodeId": "6:122",
+      "key": "d804b81f1a26c45dd073e8729fa059352bdb1f0d",
+      "source": "components/layout/site-header.tsx",
+      "export": "SiteHeader",
+      "props": {
+        "Breakpoint": "design-only (xl nav, md dealer login)"
+      }
+    },
+    {
+      "figma": "Quote button",
+      "nodeId": "7:43",
+      "key": "be353c25ee16b0806853721ec639b284ebe2d872",
+      "source": "components/quote/quote-question.tsx",
+      "export": "QuoteButton",
+      "props": {
+        "Variant": {
+          "prop": "variant",
+          "map": {
+            "Next": "next",
+            "Back": "back",
+            "Outline": "outline",
+            "Choice": "choice",
+            "Choice selected": "choice + aria-pressed (ChoiceGroup)",
+            "Select": "select",
+            "Selected": "selected",
+            "Dark": "dark",
+            "Dark wide": "dark-wide",
+            "Back strong": "back-strong"
+          }
+        },
+        "State": {
+          "prop": "disabled",
+          "map": {
+            "Default": false,
+            "Disabled": true
+          }
+        },
+        "Label": "children"
+      }
+    },
+    {
+      "figma": "Quote field",
+      "nodeId": "7:56",
+      "key": "543806404a1c94f05e9e8ff10726c3b2ed58b8f8",
+      "source": "components/quote/quote-question.tsx",
+      "export": "QuoteField",
+      "props": {
+        "Label": "label",
+        "Value": "value / placeholder",
+        "State": "design-only (focus = focus:border-quote-ink)"
+      }
+    },
+    {
+      "figma": "Quote select",
+      "nodeId": "7:75",
+      "key": "bf72473427a9681b0f909691b0ab7ed0fcc38dcc",
+      "source": "components/quote/quote-select.tsx",
+      "export": "QuoteSelect",
+      "props": {
+        "Label": "label",
+        "Show label": "!hideLabel",
+        "Value": "value / placeholder",
+        "State": "design-only"
+      }
+    },
+    {
+      "figma": "Help link",
+      "nodeId": "7:76",
+      "key": "7009f7182d3bf832b998041b372f5156170019ee",
+      "source": "components/quote/quote-question.tsx",
+      "export": "HelpLink",
+      "props": {
+        "Label": "label"
+      }
+    },
+    {
+      "figma": "Quote checkbox",
+      "nodeId": "7:86",
+      "key": "cc8f90e7746b0e4690bad955ff135d2ad13e3362",
+      "source": "components/quote/add-on-cards.tsx",
+      "export": "inline role=checkbox button",
+      "props": {
+        "Checked": "aria-checked"
+      }
+    },
+    {
+      "figma": "Quote notice",
+      "nodeId": "7:93",
+      "key": "4a3c081ee643c188ebff66fc40f1d16f43b7a7b9",
+      "source": "components/quote/quote-question.tsx",
+      "export": "QuoteNotice",
+      "props": {
+        "Title": "title",
+        "Show title": "title defined",
+        "Body": "children",
+        "Tone": {
+          "feature": "neutral-panels",
+          "map": {
+            "Baseline": "off",
+            "Neutral (after)": "on"
+          }
+        }
+      }
+    },
+    {
+      "figma": "Question",
+      "nodeId": "8:29",
+      "key": "28f4e43ac20496361a8c0433697ca9f9c716f929",
+      "source": "components/quote/quote-question.tsx",
+      "export": "Question",
+      "props": {
+        "Status": {
+          "prop": "done",
+          "map": {
+            "Done": true,
+            "Pending": false
+          }
+        },
+        "Title": "title",
+        "Show rule": "!isLast"
+      }
+    },
+    {
+      "figma": "Cover tier card",
+      "nodeId": "8:88",
+      "key": "780a40eeb5f695e5f624ad92cb3864f8dd710f57",
+      "source": "components/quote/cover-tier-cards.tsx",
+      "export": "CoverTierCards (one tier)",
+      "props": {
+        "Selected": "tier.id === selected",
+        "Most popular": "tier.popular",
+        "Name": "tier.name",
+        "Tagline": "tier.tagline"
+      }
+    },
+    {
+      "figma": "Add-on card",
+      "nodeId": "8:129",
+      "key": "94f6971ff9eb5d587bdd2ecc4a5e12226dae3911",
+      "source": "components/quote/add-on-cards.tsx",
+      "export": "AddOnCards (one add-on)",
+      "props": {
+        "State": {
+          "map": {
+            "Default": "available, not selected",
+            "Selected": "selected",
+            "Unavailable": "!available"
+          }
+        },
+        "Name": "addOn.name"
+      }
+    },
+    {
+      "figma": "Site footer",
+      "nodeId": "11:183",
+      "key": "59b196ec784d9f559fba5353543e5b4a1be71f79",
+      "source": "components/layout/site-footer.tsx",
+      "export": "SiteFooter",
+      "props": {
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Comparison header",
+      "nodeId": "12:144",
+      "key": "f11ba6fe0e49e4bf7a1ac6703e7d1bf0f2b9057b",
+      "source": "components/sections/cover-comparison.tsx",
+      "export": "CoverComparison (column headings)",
+      "props": {
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Comparison row",
+      "nodeId": "12:183",
+      "key": "f2c0e8c3e1de04cf3c0186c3e7398780eba528be",
+      "source": "components/sections/cover-comparison.tsx",
+      "export": "CoverComparison (row)",
+      "props": {
+        "Benefit": "row.label",
+        "Cell 1": "row.cells[0] (Benefit/included or Benefit/excluded)",
+        "Cell 2": "row.cells[1]",
+        "Cell 3": "row.cells[2]",
+        "Breakpoint": "design-only"
+      },
+      "data": "content/cover-comparison-rows.ts"
+    },
+    {
+      "figma": "Comparison divider",
+      "nodeId": "12:184",
+      "key": "e2223eb85a50f34408d03fc69bee1cd685481d84",
+      "source": "components/sections/cover-comparison.tsx",
+      "export": "CoverComparison (divider row)",
+      "props": {
+        "Label": "row.divider"
+      }
+    },
+    {
+      "figma": "Comparison document row",
+      "nodeId": "12:208",
+      "key": "208eafc7ed0d441dcec9aa81b326ec13d7b15ed1",
+      "source": "components/sections/cover-comparison.tsx",
+      "export": "CoverComparison (documents)",
+      "props": {
+        "Document": "coverComparison.documents[].label",
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Star rating",
+      "nodeId": "13:231",
+      "key": "34403847a999e4a3ba9bfcde8d9c09ce49d12ce5",
+      "source": "components/sections/review-carousel.tsx",
+      "export": "stars",
+      "props": {
+        "Rating": "5 or 4.7"
+      }
+    },
+    {
+      "figma": "Rating summary",
+      "nodeId": "13:232",
+      "key": "216155d10507ba7f7bf7fde3add71827d5f60069",
+      "source": "components/sections/review-carousel.tsx",
+      "export": "rating summary",
+      "props": {
+        "Rating": "rating",
+        "Count": "review count"
+      }
+    },
+    {
+      "figma": "Review card",
+      "nodeId": "13:309",
+      "key": "cbaa8a7496444782be3ed4d5f674929fb5e0b1bf",
+      "source": "components/sections/review-carousel.tsx",
+      "export": "review card",
+      "props": {
+        "Review": "quote",
+        "Name": "author",
+        "Age": "date",
+        "Show read more": "quote over ~60 words",
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Carousel arrow",
+      "nodeId": "13:322",
+      "key": "c73543e9f7e27bc6866e3ecf83774fb5b4c437f9",
+      "source": "components/sections/review-carousel.tsx",
+      "props": {
+        "Direction": "Previous|Next",
+        "State": "Default|Hover"
+      }
+    },
+    {
+      "figma": "Carousel dot",
+      "nodeId": "13:325",
+      "key": "7332a8ee9274c7ff75263e43aab1c745d8c58071",
+      "source": "components/sections/review-carousel.tsx",
+      "props": {
+        "Active": "current slide"
+      }
+    },
+    {
+      "figma": "Carousel progress",
+      "nodeId": "13:326",
+      "key": "90b16750bb82d3bf9c65e8fa1eefe9c7a8e36db7",
+      "source": "components/sections/review-carousel.tsx",
+      "props": {}
+    },
+    {
+      "figma": "Carousel pause button",
+      "nodeId": "13:335",
+      "key": "98e0448e152251bde8c40b9117d17325f6e4fcef",
+      "source": "components/sections/review-carousel.tsx",
+      "props": {
+        "State": "Playing|Paused"
+      }
+    },
+    {
+      "figma": "Testimonials",
+      "nodeId": "13:540",
+      "key": "5e85812884f0f2baa30df51468b26583a2d10525",
+      "source": "components/sections/testimonials.tsx",
+      "export": "Testimonials",
+      "props": {
+        "Breakpoint": "design-only"
+      }
+    },
+    {
+      "figma": "Quote stepper",
+      "nodeId": "13:737",
+      "key": "f7cd4531bb5dba4c129c478ebc29164dc5bb1162",
+      "source": "components/quote/quote-stepper.tsx",
+      "export": "QuoteStepper",
+      "props": {
+        "Step": "QUOTE_STEPS slug (lib/quote-flow.ts)",
+        "Breakpoint": "design-only"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "figma": "Logo/Header",
+      "nodeId": "4:27",
+      "source": "public/images/header-logo.svg"
+    },
+    {
+      "figma": "Benefit icon/fair-pricing",
+      "nodeId": "3:53",
+      "source": "public/images/fair_pricing.svg"
+    },
+    {
+      "figma": "Icon/*",
+      "nodeIds": {
+        "circle-check": "3:8",
+        "circle-minus": "3:12",
+        "circle-plus": "3:17",
+        "info": "3:22",
+        "check": "3:25",
+        "x": "3:29",
+        "menu": "3:34",
+        "arrow-drop-down": "3:37"
+      },
+      "source": "lucide-react (arrow-drop-down is the inline SVG in quote-select.tsx)"
+    },
+    {
+      "figma": "Logo/Footer",
+      "nodeId": "11:46",
+      "key": "b5ba5a3c927631657b4df9ae26815282a5fe47ee",
+      "source": "public/images/footer-logo.svg"
+    }
+  ],
+  "notInFigmaYet": [
+    "StickyCtaBar",
+    "PromoBanner",
+    "TwoColumnBlock",
+    "ClosedPlans",
+    "QuoteShell",
+    "CoverTable",
+    "ExcessPicker",
+    "Feature/variant toggle"
+  ],
+  "site": {
+    "fileKey": "BeVuiNJCqEuzWBXuyMLcJi",
+    "url": "https://www.figma.com/design/BeVuiNJCqEuzWBXuyMLcJi",
+    "note": "Desktop page recreations built only from library instances. 'PENDING …' frames are swapped for Site footer, Testimonials, Comparison and Quote stepper instances once the library is published.",
+    "pages": {
+      "Home": "0:1",
+      "Car insurance": "2:2",
+      "Mechanical breakdown": "2:3",
+      "CreditCare": "2:4",
+      "GAP cover": "2:5",
+      "Claims": "2:6",
+      "Why us": "2:7",
+      "Partners": "2:8",
+      "Contact": "2:9",
+      "Quote flow": "2:10"
+    },
+    "reviews": "/mnt/project-files/provident-reviews/google-review-picks.md"
+  }
+}

@@ -1,0 +1,631 @@
+/*
+ * Bizbo Design System v2.0, scoped to the client review pages (/review).
+ *
+ * The review is Bizbo's document to Provident, so its chrome uses Bizbo's
+ * roles, Geist and the Lichen accent. Anything that shows the Provident site
+ * (screenshots, previews) keeps Provident's own styling: frames stay white and
+ * nothing in here reaches outside [data-brand="bizbo"].
+ *
+ * Dark mode, as the Bizbo website ships. Never hard-code a hex below the token
+ * block: use the roles.
+ *
+ * These rules are deliberately unlayered so they win over globals.css (the
+ * Provident base layer). Use the bz- classes for colour and type, Tailwind for
+ * layout only.
+ */
+
+[data-brand="bizbo"] {
+  /* Neutral Olive scale. There is deliberately no --s400 or --s500. */
+  --s50: #f9f9f8;
+  --s100: #ededea;
+  --s200: #d6d7d2;
+  --s300: #bfc1ba;
+  --s600: #797e73;
+  --s700: #62675c;
+  --s800: #4b5144;
+  --s900: #343b2c;
+  --s950: #293021;
+
+  /* Role ladder, dark */
+  --zen: var(--s950);
+  --fig: var(--s900);
+  --subtle: var(--s800);
+  --stone: var(--s700);
+  --earth: var(--s600);
+  --earth-deep: var(--s300);
+  --moss: var(--s200);
+  --olive: var(--s100);
+  --root: var(--s50);
+  --root-rgb: 249, 249, 248;
+  --hairline: rgba(var(--root-rgb), 0.12);
+  --line-faint: rgba(var(--root-rgb), 0.22);
+  --line-strong: rgba(var(--root-rgb), 0.62);
+  --madder: #e09a85;
+  --lichen: #98af3a;
+  --lichen-ink: #293021;
+
+  --bz-sans: var(--font-geist), system-ui, sans-serif;
+  --bz-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --bz-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--fig);
+  color: var(--root);
+  font-family: var(--bz-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Undo the Provident base layer inside the review. */
+:where([data-brand="bizbo"]) :where(h1, h2, h3, h4) {
+  font-size: inherit;
+  line-height: inherit;
+}
+:where([data-brand="bizbo"]) a {
+  color: inherit;
+  text-decoration: none;
+}
+:where([data-brand="bizbo"]) button:not(:disabled):hover {
+  opacity: 1;
+}
+[data-brand="bizbo"] :focus-visible {
+  outline: 2px solid var(--lichen);
+  outline-offset: 2px;
+}
+[data-brand="bizbo"] ::selection {
+  background: var(--root);
+  color: var(--zen);
+}
+
+/* Type */
+.bz-h1 {
+  font-size: clamp(2.2rem, 4.4vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+.bz-h2 {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.bz-h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.bz-lede {
+  font-size: clamp(16px, 1.25vw, 18px);
+  color: var(--moss);
+  line-height: 1.6;
+}
+.bz-muted {
+  color: var(--earth-deep);
+}
+.bz-small {
+  font-size: 14px;
+}
+.bz-eyebrow {
+  font-family: var(--bz-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--earth-deep);
+}
+.bz-mono {
+  font-family: var(--bz-mono);
+  font-variant-numeric: tabular-nums;
+}
+.bz-arrow {
+  font-family: var(--bz-mono);
+  font-weight: 400;
+  display: inline-block;
+  transition: transform 300ms var(--bz-ease);
+}
+.bz-link {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--line-faint);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 180ms var(--bz-ease);
+}
+.bz-link:hover {
+  text-decoration-color: var(--root);
+}
+
+/* Header and navigation */
+.bz-header {
+  background: var(--zen);
+  border-bottom: 1px solid var(--hairline);
+}
+.bz-wordmark {
+  font-family: var(--bz-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+.bz-wordmark strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.bz-nav-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  border-left: 2px solid transparent;
+  color: var(--moss);
+  transition: background-color 180ms var(--bz-ease), color 180ms var(--bz-ease);
+}
+.bz-nav-item:hover {
+  color: var(--root);
+  background: color-mix(in srgb, var(--root) 5%, var(--fig));
+}
+.bz-nav-item[aria-current="page"] {
+  color: var(--root);
+  font-weight: 600;
+  border-left-color: var(--root);
+  background: color-mix(in srgb, var(--root) 5%, var(--fig));
+}
+.bz-nav-num {
+  font-family: var(--bz-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--earth-deep);
+  padding-top: 3px;
+  width: 24px;
+  flex-shrink: 0;
+}
+.bz-subnav {
+  border-left: 1px solid var(--hairline);
+}
+.bz-subnav a {
+  display: block;
+  padding: 2px 0;
+  color: var(--earth-deep);
+}
+.bz-subnav a:hover,
+.bz-subnav a[aria-current="true"] {
+  color: var(--root);
+}
+.bz-subnav a[aria-current="true"] {
+  font-weight: 600;
+}
+
+/* Panels and cells */
+.bz-panel {
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: var(--fig);
+}
+.bz-cell {
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: var(--zen);
+}
+.bz-cell--stone {
+  background: var(--subtle);
+  border-color: var(--hairline);
+}
+.bz-cell--dashed {
+  border: 1px dashed var(--line-faint);
+  background: transparent;
+}
+.bz-cell--warn {
+  border-color: color-mix(in srgb, var(--madder) 55%, transparent);
+  background: color-mix(in srgb, var(--madder) 6%, var(--fig));
+}
+.bz-warn {
+  color: var(--madder);
+}
+.bz-rule-top {
+  border-top: 1px solid var(--hairline);
+}
+.bz-divide > * + * {
+  border-top: 1px solid var(--hairline);
+}
+.bz-quote {
+  border-left: 1px solid var(--line-strong);
+  padding-left: 16px;
+  color: var(--moss);
+}
+
+/* Guide-line device: 0.5px lines from the corners, like crop marks. Website only, primary buttons and major panels. */
+.bz-guides {
+  position: relative;
+}
+.bz-guides::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--gl, 14px) * -1);
+  pointer-events: none;
+  --g: var(--line-faint);
+  --l: var(--gl, 14px);
+  background:
+    linear-gradient(var(--g), var(--g)) left 0 top var(--l) / var(--l) 0.5px no-repeat,
+    linear-gradient(var(--g), var(--g)) left var(--l) top 0 / 0.5px var(--l) no-repeat,
+    linear-gradient(var(--g), var(--g)) right 0 top var(--l) / var(--l) 0.5px no-repeat,
+    linear-gradient(var(--g), var(--g)) right var(--l) top 0 / 0.5px var(--l) no-repeat,
+    linear-gradient(var(--g), var(--g)) left 0 bottom var(--l) / var(--l) 0.5px no-repeat,
+    linear-gradient(var(--g), var(--g)) left var(--l) bottom 0 / 0.5px var(--l) no-repeat,
+    linear-gradient(var(--g), var(--g)) right 0 bottom var(--l) / var(--l) 0.5px no-repeat,
+    linear-gradient(var(--g), var(--g)) right var(--l) bottom 0 / 0.5px var(--l) no-repeat;
+}
+.bz-guides--sm {
+  --gl: 8px;
+}
+
+/* Buttons: primary (one per screen), ghost, quiet. */
+.bz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: var(--bz-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  transition: background-color 180ms var(--bz-ease), border-color 180ms var(--bz-ease), color 180ms var(--bz-ease);
+}
+.bz-btn:hover .bz-arrow--fwd {
+  transform: translateX(3px);
+}
+.bz-btn--sm {
+  padding: 7px 12px;
+  font-size: 12px;
+  gap: 8px;
+}
+.bz-btn--primary {
+  background: var(--lichen);
+  color: var(--lichen-ink);
+}
+.bz-btn--primary:hover {
+  background: color-mix(in srgb, var(--lichen-ink) 5%, var(--lichen));
+}
+.bz-btn--ghost {
+  border-color: var(--line-strong);
+  color: var(--root);
+}
+.bz-btn--ghost:hover {
+  background: color-mix(in srgb, var(--root) 5%, var(--fig));
+}
+.bz-btn--quiet {
+  color: var(--moss);
+  padding-inline: 0;
+}
+.bz-btn--quiet:hover {
+  color: var(--root);
+}
+.bz-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* Feedback verdicts: chosen states, not calls to action, so no Lichen. */
+.bz-btn--approved {
+  background: var(--root);
+  border-color: var(--root);
+  color: var(--zen);
+}
+.bz-btn--changes {
+  border-color: var(--madder);
+  color: var(--madder);
+  background: color-mix(in srgb, var(--madder) 10%, var(--zen));
+}
+
+/* Labels and tags */
+.bz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--moss);
+  line-height: 1.4;
+}
+.bz-tag--optional {
+  border-style: dashed;
+  border-color: var(--line-strong);
+  color: var(--root);
+}
+.bz-pip {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--earth);
+  flex-shrink: 0;
+}
+.bz-pip--live {
+  background: var(--lichen);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lichen) 22%, transparent);
+}
+.bz-figlabel {
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+/* Stats */
+.bz-stat dt {
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--earth-deep);
+}
+.bz-stat dd {
+  font-family: var(--bz-mono);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin-top: 6px;
+}
+
+/* Tabs and segmented switch */
+.bz-tabs {
+  border-bottom: 1px solid var(--hairline);
+}
+.bz-tab {
+  margin-bottom: -1px;
+  padding: 10px 14px;
+  border-bottom: 2px solid transparent;
+  font-family: var(--bz-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--earth-deep);
+  transition: color 180ms var(--bz-ease), border-color 180ms var(--bz-ease);
+}
+.bz-tab:hover {
+  color: var(--root);
+}
+.bz-tab[aria-selected="true"] {
+  color: var(--root);
+  border-bottom-color: var(--root);
+}
+.bz-segment {
+  display: inline-flex;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  padding: 2px;
+}
+.bz-segment button {
+  padding: 6px 14px;
+  border-radius: 1px;
+  font-family: var(--bz-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--earth-deep);
+}
+.bz-segment button[aria-checked="true"] {
+  background: var(--root);
+  color: var(--zen);
+}
+
+/* Table */
+.bz-table th {
+  font-family: var(--bz-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--earth-deep);
+  border-bottom: 1px solid var(--line-faint);
+}
+.bz-table td {
+  border-top: 1px solid var(--hairline);
+}
+.bz-table tbody tr {
+  transition: background-color 180ms var(--bz-ease);
+}
+.bz-table tbody tr:hover {
+  background: color-mix(in srgb, var(--root) 5%, var(--fig));
+}
+
+/* Cards: hover is a 5% wash of the ground's own ink. */
+.bz-card {
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: var(--fig);
+  transition: background-color 300ms var(--bz-ease), border-color 300ms var(--bz-ease);
+}
+.bz-card:hover {
+  background: color-mix(in srgb, var(--root) 5%, var(--fig));
+  border-color: var(--line-faint);
+}
+.bz-card:hover .bz-arrow--fwd {
+  transform: translateX(3px);
+}
+
+/* Provident screenshots keep Provident's white page behind them. */
+.bz-shot {
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  background: #fff;
+}
+
+/* Form fields */
+.bz-field {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  background: var(--zen);
+  color: var(--root);
+  font-size: 14px;
+}
+.bz-field::placeholder {
+  color: var(--earth);
+}
+.bz-pre {
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  background: var(--zen);
+  font-family: var(--bz-mono);
+  font-size: 13px;
+  color: var(--moss);
+}
+
+/* Word diff */
+.bz-del {
+  color: var(--madder);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--madder) 70%, transparent);
+}
+.bz-ins {
+  color: var(--root);
+  text-decoration: none;
+  background: rgba(var(--root-rgb), 0.14);
+  border-radius: 2px;
+  padding-inline: 2px;
+}
+
+/* Line art: currentColor strokes so it reverses on any ground. */
+svg.linework {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: square;
+  stroke-width: 1.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-brand="bizbo"] *,
+  [data-brand="bizbo"] *::before,
+  [data-brand="bizbo"] *::after {
+    transition: none !important;
+  }
+}
+
+/* Next-step cards on the overview: Stone-step ground so they stand off the page, with Bizbo line art. */
+.bz-card--raised {
+  background: var(--subtle);
+  border-color: var(--line-faint);
+}
+.bz-card--raised:hover {
+  background: color-mix(in srgb, var(--root) 5%, var(--subtle));
+}
+.bz-stepart {
+  color: color-mix(in srgb, var(--root) 62%, transparent);
+  border-bottom: 1px solid var(--hairline);
+  transition: color 300ms var(--bz-ease);
+}
+.bz-card:hover .bz-stepart {
+  color: var(--root);
+}
+svg.linework.bz-stepart-devices {
+  stroke-width: 2.5px;
+}
+.bz-stepart-devices * {
+  vector-effect: non-scaling-stroke;
+}
+/* The phone stands in front of the laptop's base, so it masks it with the card's ground. */
+.bz-stepart-devices .bz-stepart-mask {
+  fill: var(--subtle);
+}
+.bz-card:hover .bz-stepart-devices .bz-stepart-mask {
+  fill: color-mix(in srgb, var(--root) 5%, var(--subtle));
+}
+
+/* Score meters: five segments, one neutral fill. */
+.bz-meter {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+.bz-meter-seg {
+  position: relative;
+  width: 10px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+.bz-meter-seg > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--moss);
+}
+.bz-hint {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--bz-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--earth-deep);
+}
+.bz-table .bz-hint {
+  white-space: nowrap;
+}
+.bz-stat .bz-meter {
+  display: flex;
+}
+
+/* Informational note: not an error, so no Madder. Stone ground with a strong rule down the side. */
+.bz-cell--note {
+  background: var(--subtle);
+  border-color: var(--hairline);
+  border-left: 2px solid var(--root);
+}
+.bz-note-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--root);
+}
+.bz-note-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.bz-btn .bz-arrow {
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+/* Raised panel: one step up the ladder from the page (Fig to Subtle), for Page by page. */
+.bz-panel--raised {
+  background: var(--subtle);
+  border-color: var(--line-faint);
+}
+.bz-panel--raised .bz-btn--ghost:hover,
+.bz-panel--raised .bz-segment button:not([aria-checked="true"]):hover {
+  background: color-mix(in srgb, var(--root) 6%, var(--subtle));
+}
+.bz-panel--raised .bz-segment button:not([aria-checked="true"]):hover {
+  color: var(--root);
+}

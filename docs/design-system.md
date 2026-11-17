@@ -25,6 +25,16 @@ Live is two products with separate themes, so tokens are kept apart.
 
 `data-surface="quote"` on the quote shell switches off the marketing type scale. Don't mix tokens across surfaces.
 
+## Before and after
+
+"Before" is the live baseline. It must stay identical to the live site. With no choice saved, the site defaults to "After", so the newest version shows first. Never edit baseline markup or copy to make room for a change.
+
+- Each change has an id in `lib/variants.ts`. Read it with `useFeature(id)` or wrap markup in `<Feature id="...">`.
+- The floating toggle switches between Before, After, or any mix via Pick.
+- Share a state with `?v=before`, `?v=after`, or a list such as `?v=social-proof,benefits-table`. The choice is kept in a cookie.
+- When a change is approved, it becomes baseline only once it's on the live site. Remove its switch at that point.
+- Tokens listed under "after only" in `globals.css` must not appear in baseline markup.
+
 ## Tokens
 
 | Token | Value | Use |
@@ -65,7 +75,7 @@ Primitives: `Button` (`primary`, `outline`, `white`; `default`, `wide`, `small`)
 
 Layout: `Container`, `Reveal`, `NavLink`, `RichText`, `SiteHeader`, `SiteFooter`, `StickyCtaBar`.
 
-Sections: `Hero`, `PromoBanner`, `PromoStrip`, `ProductCards`, `IconCardGrid`, `CoverComparison`, `TwoColumnBlock`, `Testimonials`, `HelpStrip`, `FaqSection`, `ClosedPlans`, `Section`, `SectionIntro`.
+Sections: `Hero`, `PromoBanner`, `PromoStrip`, `ProductCards`, `IconCardGrid`, `CoverComparison`, `TwoColumnBlock`, `Testimonials`, `GoogleReviews` (after only, feature `google-reviews`; reviews in `content/google-reviews.ts`), `HelpStrip`, `FaqSection`, `ClosedPlans`, `Section`, `SectionIntro`.
 
 Quote: `QuoteShell`, `Question`, `HelpLink`, `QuoteNotice`, `ChoiceGroup`, `QuoteButton`, `QuoteField`, `QuoteSelect`, `QuoteStepActions`, `CoverTierCards`, `CoverTable`, `ExcessPicker`, `AddOnCards`.
 
@@ -92,3 +102,15 @@ Quote: `QuoteShell`, `Question`, `HelpLink`, `QuoteNotice`, `ChoiceGroup`, `Quot
 - The Quote step uses sample prices, and they don't change with your selections.
 - The Company path, the youngest driver age range, and add-ons for lower cover levels are assumptions.
 - Contact details, driver history and checkout are not rebuilt.
+
+## Client review page
+
+`/review` walks the client through every change, page by page, with before and after screenshots and the Google review picks. It sits outside the site layout and hides the variant toggle.
+
+- Words live in `content/review.ts`; the reviews themselves still come from `content/google-reviews.ts`, and the page compares them with the original Google wording.
+- Screenshots live in `public/review` as `<shot>-<d|m>-<before|after>.webp`, with sizes in `content/review-shots.ts`. Retake them whenever a change is updated.
+- Feedback buttons save to the reviewer's browser only, and the page gathers them into text to copy into an email.
+
+## Preview password
+
+When `SITE_PASSWORD` is set (on Vercel), `proxy.ts` asks for it with the browser's sign-in prompt. Any username works. Site images and fonts stay open because the image optimiser fetches them without the password. Locally it's unset, so nothing is asked.

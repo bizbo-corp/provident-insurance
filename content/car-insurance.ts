@@ -125,3 +125,32 @@ export const closedPlans = {
     },
   ],
 };
+
+/** "After" table grouping. Row copy stays in cover-comparison-rows.ts and is matched by label. */
+export const coverCategories = [
+  {
+    heading: "Damage & loss",
+    icon: "car",
+    rows: ["Damage to your car", "Natural disaster damage", "Damage caused by fire", "Theft of your vehicle"],
+  },
+  {
+    heading: "Damage involving someone else",
+    icon: "scale",
+    rows: ["Claims that were not your fault", "Damage caused by an uninsured third party", "Damage to someone else's property"],
+  },
+  {
+    heading: "Additional benefits",
+    icon: "gift",
+    rows: ["Replacement and additional cars", "Excess-free keys & locks", "Child car seats", "Agreed value"],
+  },
+  {
+    heading: "Because you're with Provident",
+    icon: "heart",
+    rows: ["Valet costs", "Incorrect refuelling", "Towing, storage and transport"],
+  },
+  {
+    heading: "Optional extras",
+    icon: "package",
+    rows: ["Rental cover", "Trailer cover", "Excess-free glass cover", "Roadside assistance"],
+  },
+] as const;
